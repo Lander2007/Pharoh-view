@@ -16,14 +16,14 @@
 }
 
 .feature-card {
-  padding: 2rem;
+  padding: 1.75rem;
   position: relative;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 16px;
+  border-radius: 14px;
   display: flex;
   flex-direction: column;
-  gap: 0.875rem;
+  gap: 0.75rem;
   background: rgba(26, 20, 16, 0.8);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(212, 175, 55, 0.4);
@@ -57,8 +57,8 @@
 }
 
 .feature-icon {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -66,7 +66,7 @@
 }
 
 .feature-card h3 {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: #ffffff;
   position: relative;
@@ -78,6 +78,7 @@
   line-height: 1.6;
   position: relative;
   z-index: 1;
+  font-size: 0.9rem;
 }
 
 .feature-glow {
