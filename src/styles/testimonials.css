@@ -15,10 +15,10 @@
 }
 
 .testimonial-card {
-  padding: 2.5rem;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
   background: rgba(26, 20, 16, 0.8);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(212, 175, 55, 0.4);
