@@ -1,0 +1,531 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Luxurious Gold Palette */
+  --dark-gold: #0f0a05;
+  --bronze-dark: #1a1410;
+  --bronze-medium: #2d2420;
+  --burnished-gold: #D4AF37;
+  --champagne-gold: #F7E7CE;
+  --brass-gold: #B8860B;
+  --gold-accent: #FFD700;
+  
+  --text-primary: #ffffff;
+  --text-secondary: #e8dcc8;
+  --text-tertiary: #c9b896;
+  
+  --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 2rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Improve scroll behavior on mobile */
+@media (max-width: 768px) {
+  html {
+    scroll-padding-top: 80px; /* Account for mobile menu button */
+  }
+}
+
+body {
+  font-family: 'Syne', sans-serif;
+  background: linear-gradient(135deg, #0f0a05 0%, #1a1410 50%, #0f0a05 100%);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100vh;
+  cursor: none;
+}
+
+/* Show default cursor on mobile */
+@media (max-width: 768px) {
+  body {
+    cursor: auto;
+  }
+  
+  .custom-cursor,
+  .custom-cursor-dot {
+    display: none;
+  }
+
+  .back-to-top-button {
+    bottom: 1rem !important;
+    right: 1rem !important;
+    width: 56px !important;
+    height: 56px !important;
+  }
+}
+
+/* Selection styling */
+::selection {
+  background: rgba(212, 175, 55, 0.3);
+  color: #F7E7CE;
+}
+
+::-moz-selection {
+  background: rgba(212, 175, 55, 0.3);
+  color: #F7E7CE;
+}
+
+/* Luxurious Glassmorphism with Golden Tint */
+.glass {
+  background: rgba(26, 20, 16, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 16px;
+}
+
+.glass-strong {
+  background: rgba(26, 20, 16, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 16px;
+}
+
+.glass-premium {
+  background: rgba(45, 36, 32, 0.7);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(247, 231, 206, 0.2);
+  border-radius: 16px;
+  box-shadow: inset 0 0 20px rgba(212, 175, 55, 0.1);
+}
+
+/* Golden Glow Effects */
+.glow-gold {
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.4), inset 0 0 20px rgba(212, 175, 55, 0.1);
+}
+
+.glow-gold-lg {
+  box-shadow: 0 0 40px rgba(212, 175, 55, 0.5), inset 0 0 25px rgba(212, 175, 55, 0.15);
+}
+
+.glow-gold-xl {
+  box-shadow: 0 0 60px rgba(212, 175, 55, 0.6), inset 0 0 30px rgba(212, 175, 55, 0.2);
+}
+
+.glow-champagne {
+  box-shadow: 0 0 20px rgba(247, 231, 206, 0.3), inset 0 0 15px rgba(247, 231, 206, 0.1);
+}
+
+.glow-text-gold {
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.6), 0 0 20px rgba(212, 175, 55, 0.4);
+}
+
+.glow-text-champagne {
+  text-shadow: 0 0 10px rgba(247, 231, 206, 0.5), 0 0 20px rgba(247, 231, 206, 0.3);
+}
+
+/* Metallic Text Gradient */
+.text-gradient-gold {
+  background: linear-gradient(135deg, #F7E7CE 0%, #D4AF37 50%, #B8860B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.3));
+}
+
+.text-gradient-brass {
+  background: linear-gradient(135deg, #D4AF37 0%, #B8860B 50%, #8B6914 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Pharaonic Circuitry Pattern */
+.pharaonic-pattern {
+  position: relative;
+  overflow: hidden;
+}
+
+.pharaonic-pattern::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(90deg, transparent 24%, rgba(212, 175, 55, 0.05) 25%, rgba(212, 175, 55, 0.05) 26%, transparent 27%, transparent 74%, rgba(212, 175, 55, 0.05) 75%, rgba(212, 175, 55, 0.05) 76%, transparent 77%, transparent),
+    linear-gradient(0deg, transparent 24%, rgba(212, 175, 55, 0.05) 25%, rgba(212, 175, 55, 0.05) 26%, transparent 27%, transparent 74%, rgba(212, 175, 55, 0.05) 75%, rgba(212, 175, 55, 0.05) 76%, transparent 77%, transparent);
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Golden Aura on Hover */
+.golden-aura {
+  transition: all 0.3s var(--transition-smooth);
+}
+
+.golden-aura:hover {
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.6), 0 0 40px rgba(212, 175, 55, 0.4);
+  transform: translateY(-4px);
+}
+
+/* Utility Classes */
+.section-padding {
+  padding: 6rem 2rem;
+}
+
+.max-width-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.text-gold {
+  color: var(--burnished-gold);
+}
+
+.text-champagne {
+  color: var(--champagne-gold);
+}
+
+.text-brass {
+  color: var(--brass-gold);
+}
+
+/* Responsive Grid */
+.grid-auto {
+  display: grid;
+  gap: 2rem;
+  grid-auto-flow: dense;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s var(--transition-smooth);
+  font-family: 'Syne', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn svg {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn span {
+  display: flex;
+  align-items: center;
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, #D4AF37, #F7E7CE);
+  color: #0f0a05;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
+.btn-gold:hover {
+  box-shadow: 0 0 40px rgba(212, 175, 55, 0.6);
+  transform: translateY(-2px);
+}
+
+.btn-gold-outline {
+  background: transparent;
+  color: var(--burnished-gold);
+  border: 2px solid var(--burnished-gold);
+  box-shadow: inset 0 0 15px rgba(212, 175, 55, 0.1);
+}
+
+.btn-gold-outline:hover {
+  background: rgba(212, 175, 55, 0.1);
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.5), inset 0 0 15px rgba(212, 175, 55, 0.2);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--dark-gold);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--burnished-gold);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--champagne-gold);
+}
+
+/* Container Queries */
+@supports (container-type: inline-size) {
+  .container-responsive {
+    container-type: inline-size;
+  }
+
+  @container (max-width: 640px) {
+    .container-sm\:text-sm {
+      font-size: 0.875rem;
+    }
+  }
+
+  @container (min-width: 641px) and (max-width: 1024px) {
+    .container-md\:text-base {
+      font-size: 1rem;
+    }
+  }
+}
+
+/* Animations */
+@keyframes gold-pulse {
+  0%, 100% {
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(212, 175, 55, 0.6);
+  }
+}
+
+@keyframes gold-shimmer {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.6));
+  }
+}
+
+.animate-gold-pulse {
+  animation: gold-pulse 3s ease-in-out infinite;
+}
+
+.animate-gold-shimmer {
+  animation: gold-shimmer 3s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .section-padding {
+    padding: 4rem 1.5rem;
+  }
+
+  .text-gradient-gold {
+    filter: drop-shadow(0 0 4px rgba(212, 175, 55, 0.2));
+  }
+
+  /* Better touch targets */
+  .btn {
+    min-height: 48px;
+    padding: 1rem 1.5rem;
+  }
+
+  /* Improved card spacing */
+  .glass,
+  .glass-strong {
+    padding: 1.5rem;
+  }
+
+  /* Better typography */
+  h1 {
+    font-size: 2rem;
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+    line-height: 1.3;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    line-height: 1.4;
+  }
+
+  p {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+}
+
+@media (max-width: 640px) {
+  .section-padding {
+    padding: 3rem 1rem;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Stack elements vertically */
+  .hero-content,
+  .problems-grid,
+  .features-grid,
+  .bento-grid,
+  .sdg-grid,
+  .testimonials-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Reduce animation complexity on mobile */
+  * {
+    animation-duration: 0.3s !important;
+  }
+}
+
+/* Landscape mobile optimization */
+@media (max-width: 896px) and (orientation: landscape) {
+  .section-padding {
+    padding: 2rem 1.5rem;
+  }
+
+  .hero {
+    min-height: auto;
+    padding: 2rem 1.5rem;
+  }
+}
+
+/* Landscape mode optimizations for mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  section {
+    padding: 3rem 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-subtitle {
+    font-size: 0.9375rem;
+    margin-bottom: 2rem;
+  }
+
+  /* Reduce vertical spacing in landscape */
+  .features-grid,
+  .bento-grid,
+  .sdg-grid,
+  .testimonials-grid {
+    gap: 1rem;
+  }
+
+  .feature-card,
+  .bento-card,
+  .sdg-card,
+  .testimonial-card {
+    padding: 1.5rem;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 360px) {
+  section {
+    padding: 3rem 1rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .section-subtitle {
+    font-size: 0.875rem;
+  }
+
+  .btn {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.9375rem;
+  }
+}
+
+/* Improve touch target sizes for accessibility */
+@media (hover: none) and (pointer: coarse) {
+  button,
+  a,
+  .btn,
+  .mobile-menu-item,
+  .feature-card,
+  .bento-card,
+  .sdg-card,
+  .testimonial-card {
+    -webkit-tap-highlight-color: rgba(212, 175, 55, 0.2);
+  }
+
+  /* Ensure all interactive elements are at least 44x44px (iOS guideline) */
+  button:not(.mobile-menu-button),
+  a.btn {
+    min-height: 44px;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .particle-background,
+  .custom-cursor {
+    display: none !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .feature-card,
+  .bento-card,
+  .sdg-card,
+  .testimonial-card {
+    border-width: 2px;
+  }
+
+  .btn {
+    border-width: 2px;
+  }
+}

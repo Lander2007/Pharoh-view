@@ -1,0 +1,248 @@
+.sustainability {
+  background: linear-gradient(180deg, #1a1410 0%, #0f0a05 100%);
+  position: relative;
+}
+
+.sustainability-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.sdg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.sdg-card {
+  padding: 2.5rem;
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(26, 20, 16, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+}
+
+.sdg-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(212, 175, 55, 0.1),
+    rgba(247, 231, 206, 0.1),
+    rgba(212, 175, 55, 0.1)
+  );
+  animation: spin 30s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.sdg-card:hover {
+  box-shadow: 0 0 40px rgba(212, 175, 55, 0.5), inset 0 0 25px rgba(212, 175, 55, 0.15);
+  border-color: rgba(212, 175, 55, 0.6);
+  transform: translateY(-12px);
+}
+
+.sdg-number {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  font-size: 3rem;
+  font-weight: 800;
+  color: rgba(212, 175, 55, 0.2);
+  z-index: 0;
+}
+
+.sdg-icon {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #D4AF37;
+  position: relative;
+  z-index: 1;
+}
+
+.sdg-card h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  position: relative;
+  z-index: 1;
+}
+
+.sdg-description {
+  color: #e8dcc8;
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+}
+
+.sdg-impact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  position: relative;
+  z-index: 1;
+}
+
+.impact-label {
+  font-size: 0.875rem;
+  color: #c9b896;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.impact-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #D4AF37;
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+.sdg-glow {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #D4AF37, transparent);
+  opacity: 0.5;
+}
+
+.sustainability-cta {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: rgba(212, 175, 55, 0.08);
+  border: 2px solid rgba(212, 175, 55, 0.3);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.15);
+}
+
+.sustainability-cta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.1), transparent);
+  pointer-events: none;
+}
+
+.sustainability-cta h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #ffffff;
+  position: relative;
+  z-index: 1;
+}
+
+.sustainability-cta p {
+  font-size: 1.125rem;
+  color: #e8dcc8;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.sustainability-cta .btn {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .sdg-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .sdg-card {
+    padding: 2rem;
+  }
+
+  .sdg-card:active {
+    transform: scale(0.98);
+  }
+
+  .sdg-number {
+    font-size: 2.5rem;
+    top: 1rem;
+    right: 1rem;
+  }
+
+  .sdg-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .sdg-card h3 {
+    font-size: 1.25rem;
+  }
+
+  .sdg-description {
+    font-size: 0.9375rem;
+  }
+
+  .impact-value {
+    font-size: 1.125rem;
+  }
+
+  .sustainability-cta {
+    padding: 2rem 1.5rem;
+  }
+
+  .sustainability-cta h3 {
+    font-size: 1.5rem;
+  }
+
+  .sustainability-cta p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sdg-card {
+    padding: 1.5rem;
+  }
+
+  .sdg-number {
+    font-size: 2rem;
+  }
+
+  .sdg-card h3 {
+    font-size: 1.125rem;
+  }
+
+  .sustainability-cta {
+    padding: 1.5rem;
+  }
+
+  .sustainability-cta h3 {
+    font-size: 1.25rem;
+  }
+}

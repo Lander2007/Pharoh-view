@@ -1,0 +1,122 @@
+.mobile-menu-button {
+  display: none;
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 1001;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #D4AF37, #F7E7CE);
+  border: none;
+  cursor: pointer;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+}
+
+.menu-line {
+  width: 24px;
+  height: 2px;
+  background: #0f0a05;
+  border-radius: 2px;
+}
+
+.mobile-menu-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 80%;
+  max-width: 300px;
+  background: linear-gradient(135deg, #1a1410 0%, #0f0a05 100%);
+  z-index: 1001;
+  padding: 2rem;
+  box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5);
+  border-left: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.mobile-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.mobile-menu-header h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #F7E7CE 0%, #D4AF37 50%, #B8860B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.close-button {
+  background: transparent;
+  border: none;
+  color: #D4AF37;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-menu-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mobile-menu-item {
+  background: transparent;
+  border: none;
+  color: #e8dcc8;
+  font-size: 1.125rem;
+  font-weight: 600;
+  padding: 1rem 1.5rem;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  font-family: 'Syne', sans-serif;
+}
+
+.mobile-menu-item:hover {
+  background: rgba(212, 175, 55, 0.1);
+}
+
+.mobile-menu-item:active {
+  background: rgba(212, 175, 55, 0.2);
+  color: #D4AF37;
+  transform: scale(0.98);
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-button {
+    display: flex;
+  }
+
+  .mobile-menu-overlay,
+  .mobile-menu {
+    display: block;
+  }
+}
