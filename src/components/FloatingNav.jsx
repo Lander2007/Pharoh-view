@@ -51,17 +51,18 @@ export default function FloatingNav() {
       {isVisible && (
         <motion.nav
           className="floating-nav"
-          initial={{ x: -100, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: -100, opacity: 0 }}
+          initial={{ y: -100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -100, opacity: 0 }}
           transition={{ duration: 0.3 }}
+          style={{ x: 0 }}
         >
           {navItems.map((item) => (
             <motion.button
               key={item.id}
               className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
               onClick={() => scrollToSection(item.id)}
-              whileHover={{ scale: 1.1, x: 5 }}
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               title={item.label}
             >
