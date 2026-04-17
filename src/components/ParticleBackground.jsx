@@ -189,6 +189,7 @@ export default function ParticleBackground() {
   return (
     <canvas
       ref={canvasRef}
+      className="particle-canvas"
       style={{
         position: 'absolute',
         top: 0,

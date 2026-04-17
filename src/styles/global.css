@@ -529,3 +529,10 @@ body {
     border-width: 2px;
   }
 }
+
+/* Hide particle background on mobile */
+@media (max-width: 768px) {
+  .particle-canvas {
+    display: none !important;
+  }
+}
