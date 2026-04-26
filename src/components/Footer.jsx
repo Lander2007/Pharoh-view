@@ -1,5 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
+import logoImage from '../../pharoview_logo_splash-removebg-preview.png'
 import '../styles/footer.css'
 
 export default function Footer() {
@@ -25,7 +26,7 @@ export default function Footer() {
           <div className="footer-section">
             <div className="footer-brand">
               <img
-                src="/pharoview_logo_splash-removebg-preview.png"
+                src={logoImage}
                 alt="Pharoview logo"
                 className="footer-logo"
                 loading="lazy"

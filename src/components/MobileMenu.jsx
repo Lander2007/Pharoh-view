@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence, useDragControls } from 'framer-motion'
+import logoImage from '../../pharoview_logo_splash-removebg-preview.png'
 import '../styles/mobile-menu.css'
 
 export default function MobileMenu() {
@@ -97,7 +98,7 @@ export default function MobileMenu() {
               <div className="mobile-menu-header">
                 <div className="mobile-menu-brand">
                   <img
-                    src="/pharoview_logo_splash-removebg-preview.png"
+                    src={logoImage}
                     alt="Pharoview logo"
                     className="mobile-menu-logo"
                   />

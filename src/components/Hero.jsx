@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Canvas } from '@react-three/fiber'
 import FloatingChair from './3d/FloatingChair'
 import ParticleBackground from './ParticleBackground'
+import logoImage from '../../pharoview_logo_splash-removebg-preview.png'
 import '../styles/hero.css'
 
 export default function Hero() {
@@ -38,7 +39,7 @@ export default function Hero() {
         >
           <motion.div variants={itemVariants} className="hero-logo-wrap">
             <img
-              src="/pharoview_logo_splash-removebg-preview.png"
+              src={logoImage}
               alt="Pharoview logo"
               className="hero-logo"
             />

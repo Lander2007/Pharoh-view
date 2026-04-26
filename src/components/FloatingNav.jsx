@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import logoImage from '../../pharoview_logo_splash-removebg-preview.png'
 import '../styles/floating-nav.css'
 
 export default function FloatingNav() {
@@ -65,7 +66,7 @@ export default function FloatingNav() {
             title="PHAROVIEW"
           >
             <img
-              src="/pharoview_logo_splash-removebg-preview.png"
+              src={logoImage}
               alt="Pharoview logo"
               className="nav-logo"
             />
