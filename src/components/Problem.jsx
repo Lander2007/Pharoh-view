@@ -78,9 +78,11 @@ export default function Problem() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="section-title">The Problem</h2>
+          <h2 className="section-title">Problem vs. Solution</h2>
           <p className="section-subtitle">
-            Online furniture shopping is broken. Here's why:
+            Shoppers struggle with wrong sizes, mismatched colors, and costly returns.
+            PHAROVIEW solves this with in-home AR visualization that improves confidence
+            and reduces waste.
           </p>
         </motion.div>
 

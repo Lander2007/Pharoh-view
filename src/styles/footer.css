@@ -61,6 +61,21 @@
   text-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
 }
 
+.team-credits {
+  margin-top: 0.6rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid rgba(212, 175, 55, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+}
+
+.team-credits p {
+  color: #c9b896;
+  font-size: 0.74rem;
+  line-height: 1.35;
+}
+
 .footer-section h4 {
   font-size: 0.78rem;
   font-weight: 700;

@@ -61,6 +61,16 @@
   transform: translateY(-12px);
 }
 
+.sdg-card.climate-priority {
+  border-color: rgba(212, 175, 55, 0.75);
+  box-shadow: 0 0 42px rgba(212, 175, 55, 0.35), inset 0 0 22px rgba(212, 175, 55, 0.2);
+}
+
+.sdg-card.climate-priority .impact-value {
+  color: #f7e7ce;
+  text-shadow: 0 0 12px rgba(247, 231, 206, 0.5);
+}
+
 .sdg-number {
   position: absolute;
   top: 1.5rem;

@@ -16,7 +16,7 @@ export default function Solution() {
     },
     {
       title: 'Real-time Rotation',
-      description: 'Rotate furniture 360° to see it from every angle',
+      description: 'Rotate 3D furniture models 360° to inspect every angle',
       icon: (
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -25,7 +25,7 @@ export default function Solution() {
     },
     {
       title: 'Color Customization',
-      description: 'Change colors instantly to match your décor',
+      description: 'Change colors instantly to match your room before purchasing',
       icon: (
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" strokeLinecap="round" strokeLinejoin="round"/>
@@ -93,9 +93,9 @@ export default function Solution() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="section-title">The Solution</h2>
+          <h2 className="section-title">Technical Features</h2>
           <p className="section-subtitle">
-            PHAROVIEW uses cutting-edge AR technology to bring furniture to life
+            Core AR capabilities that power confident, low-waste shopping decisions
           </p>
         </motion.div>
 

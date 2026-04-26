@@ -35,6 +35,12 @@ export default function Footer() {
               <h3>PHAROVIEW</h3>
               <p>AR-powered confidence for smarter furniture decisions.</p>
               <div className="brand-tagline">Ancient wisdom, future vision.</div>
+              <div className="team-credits">
+                <p><strong>Team Pyramid X</strong> - Climate Leaders Project</p>
+                <p>Ali Mohamed Ali Hassan & Adel Mohamed Mohamed</p>
+                <p>WE Applied Technology School</p>
+                <p>Supported by YLF and the Ministry of Environment</p>
+              </div>
             </div>
           </div>
 

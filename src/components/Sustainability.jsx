@@ -1,17 +1,18 @@
 import React from 'react'
 import { motion } from 'framer-motion'
+import recycleIcon from '../../recycle.png'
 import '../styles/sustainability.css'
 
 export default function Sustainability() {
   const goals = [
     {
       number: '12',
-      title: 'Responsible Consumption',
-      description: 'Reduce waste by eliminating unnecessary returns and promoting conscious purchasing decisions',
-      impact: '50K tons of waste prevented annually',
+      title: 'Goal 12: Responsible Consumption',
+      description: 'Reducing resource waste and over-consumption by minimizing unnecessary product returns.',
+      impact: 'Lower material waste and reverse-logistics load',
       icon: (
         <img 
-          src="/recycle.png" 
+          src={recycleIcon} 
           alt="Recycle icon" 
           style={{ 
             width: '40px', 
@@ -23,9 +24,9 @@ export default function Sustainability() {
     },
     {
       number: '11',
-      title: 'Sustainable Living',
-      description: 'Design smarter, more sustainable living spaces through better product visualization',
-      impact: '1M+ homes optimized',
+      title: 'Goal 11: Sustainable Cities',
+      description: 'Improving city living quality through smart interior planning and better space decisions.',
+      impact: 'Smarter homes with fewer purchasing mistakes',
       icon: (
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" strokeLinecap="round" strokeLinejoin="round"/>
@@ -35,9 +36,9 @@ export default function Sustainability() {
     },
     {
       number: '9',
-      title: 'Innovation in E-commerce',
-      description: 'Transform the furniture industry through cutting-edge AR technology',
-      impact: '$2B market impact',
+      title: 'Goal 9: Industry Innovation',
+      description: 'Driving innovation in e-commerce through practical AR visualization technology.',
+      impact: 'Stronger digital commerce and retail innovation',
       icon: (
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M12 2 2 7l10 5 10-5-10-5z" strokeLinecap="round" strokeLinejoin="round"/>
@@ -48,8 +49,8 @@ export default function Sustainability() {
     {
       number: '13',
       title: 'Climate Action',
-      description: 'Reduce CO2 emissions from return shipping and logistics',
-      impact: '100K tons CO2 saved',
+      description: 'Climate action by reducing carbon emissions from returned shipments and repeated delivery cycles.',
+      impact: 'Direct reduction in transport-related CO2 emissions',
       icon: (
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <circle cx="12" cy="12" r="10"/>
@@ -91,7 +92,7 @@ export default function Sustainability() {
         >
           <h2 className="section-title">Sustainability Goals</h2>
           <p className="section-subtitle">
-            PHAROVIEW aligns with UN Sustainable Development Goals
+            PHAROVIEW contributes to key UN Sustainable Development Goals
           </p>
         </motion.div>
 
@@ -105,7 +106,7 @@ export default function Sustainability() {
           {goals.map((goal, idx) => (
             <motion.div
               key={idx}
-              className="sdg-card glass-strong golden-aura"
+              className={`sdg-card glass-strong golden-aura ${goal.number === '13' ? 'climate-priority' : ''}`}
               variants={itemVariants}
             >
               <div className="sdg-number">{goal.number}</div>
@@ -128,10 +129,10 @@ export default function Sustainability() {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.3 }}
         >
-          <h3>Join the Sustainable Shopping Revolution</h3>
-          <p>Every download contributes to a greener planet</p>
+          <h3>Climate Leaders Program Impact</h3>
+          <p>Every confident purchase helps reduce avoidable returns and emissions.</p>
           <button className="btn btn-gold glow-gold">
-            Learn More About Our Impact
+            Explore Our Sustainability Vision
           </button>
         </motion.div>
       </div>

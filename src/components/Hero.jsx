@@ -47,11 +47,12 @@ export default function Hero() {
 
           <motion.h1 variants={itemVariants} className="hero-headline">
             Before you pay...
-            <span className="text-gradient-gold"> see it in your home</span>
+            <span className="text-gradient-gold"> see the product in your home</span>
           </motion.h1>
 
           <motion.p variants={itemVariants} className="hero-subheadline">
-            The smart AR application for visualizing products in real-time
+            PHAROVIEW is an AR app that uses your mobile camera to preview furniture and
+            decor in interactive 3D before you buy.
           </motion.p>
 
           <motion.div variants={itemVariants} className="hero-cta-group">
