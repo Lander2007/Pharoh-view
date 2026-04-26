@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Hero from './components/Hero'
 import Problem from './components/Problem'
 import Solution from './components/Solution'
@@ -12,8 +12,11 @@ import FloatingNav from './components/FloatingNav'
 import MobileMenu from './components/MobileMenu'
 import BackToTop from './components/BackToTop'
 import LoadingScreen from './components/LoadingScreen'
+import ComingSoonModal from './components/ComingSoonModal'
 
 export default function App() {
+  const [isIosModalOpen, setIsIosModalOpen] = useState(false)
+
   return (
     <>
       <LoadingScreen />
@@ -21,16 +24,17 @@ export default function App() {
       <div className="pharoview-app">
         <ScrollProgress />
         <FloatingNav />
-        <Hero />
+        <Hero onIosClick={() => setIsIosModalOpen(true)} />
         <Problem />
         <Solution />
         <ValueProposition />
         <Testimonials />
         <Sustainability />
-        <CTA />
+        <CTA onIosClick={() => setIsIosModalOpen(true)} />
         <Footer />
         <BackToTop />
       </div>
+      <ComingSoonModal isOpen={isIosModalOpen} onClose={() => setIsIosModalOpen(false)} />
     </>
   )
 }

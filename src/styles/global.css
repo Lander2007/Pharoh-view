@@ -537,3 +537,45 @@ body {
     display: none !important;
   }
 }
+
+.coming-soon-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 10, 5, 0.78);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 12000;
+}
+
+.coming-soon-modal {
+  width: min(460px, 100%);
+  text-align: center;
+  padding: 1.6rem 1.35rem;
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  box-shadow: 0 0 34px rgba(212, 175, 55, 0.22), inset 0 0 18px rgba(212, 175, 55, 0.08);
+}
+
+.coming-soon-modal h3 {
+  font-size: clamp(1.55rem, 4vw, 2rem);
+  font-weight: 800;
+  margin-bottom: 0.55rem;
+  background: linear-gradient(135deg, #F7E7CE 0%, #D4AF37 50%, #B8860B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.coming-soon-modal p {
+  color: #e8dcc8;
+  margin-bottom: 1.2rem;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.coming-soon-modal .btn {
+  min-width: 130px;
+}
