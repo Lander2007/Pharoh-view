@@ -47,7 +47,7 @@ body {
   line-height: 1.6;
   overflow-x: hidden;
   min-height: 100vh;
-  cursor: none;
+  cursor: auto;
   font-size: 13px;
 }
 

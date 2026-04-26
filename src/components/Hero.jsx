@@ -60,20 +60,23 @@ export default function Hero() {
             </button>
           </motion.div>
 
-          <motion.div variants={itemVariants} className="hero-stats">
-            <div className="stat">
-              <span className="stat-value">10M+</span>
-              <span className="stat-label">Furniture Models</span>
-            </div>
-            <div className="stat">
-              <span className="stat-value">98%</span>
-              <span className="stat-label">Accuracy Rate</span>
-            </div>
-            <div className="stat">
-              <span className="stat-value">50K+</span>
-              <span className="stat-label">Happy Users</span>
-            </div>
-          </motion.div>
+          <div className="hero-confetti-fill" aria-hidden="true">
+            <span className="hcf-dot" style={{top:'18%',left:'8%',width:'3px',height:'3px',opacity:0.55}}></span>
+            <span className="hcf-dot" style={{top:'35%',left:'22%',width:'2px',height:'2px',opacity:0.4}}></span>
+            <span className="hcf-dot" style={{top:'12%',left:'48%',width:'4px',height:'4px',opacity:0.35}}></span>
+            <span className="hcf-dot" style={{top:'55%',left:'5%',width:'2px',height:'2px',opacity:0.45}}></span>
+            <span className="hcf-dot" style={{top:'70%',left:'30%',width:'3px',height:'3px',opacity:0.3}}></span>
+            <span className="hcf-dot" style={{top:'80%',left:'60%',width:'2px',height:'2px',opacity:0.5}}></span>
+            <span className="hcf-dot" style={{top:'25%',left:'75%',width:'3px',height:'3px',opacity:0.38}}></span>
+            <span className="hcf-dot" style={{top:'48%',left:'88%',width:'2px',height:'2px',opacity:0.42}}></span>
+            <span className="hcf-dot" style={{top:'90%',left:'15%',width:'4px',height:'4px',opacity:0.28}}></span>
+            <span className="hcf-dot" style={{top:'60%',left:'50%',width:'2px',height:'2px',opacity:0.36}}></span>
+            <span className="hcf-diamond" style={{top:'10%',left:'35%',opacity:0.22}}></span>
+            <span className="hcf-diamond" style={{top:'65%',left:'80%',opacity:0.18}}></span>
+            <span className="hcf-diamond" style={{top:'42%',left:'14%',opacity:0.2}}></span>
+            <span className="hcf-cross" style={{top:'30%',left:'60%',opacity:0.15}}></span>
+            <span className="hcf-cross" style={{top:'75%',left:'42%',opacity:0.13}}></span>
+          </div>
         </motion.div>
 
         <motion.div

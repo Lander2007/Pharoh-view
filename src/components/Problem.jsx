@@ -124,23 +124,20 @@ export default function Problem() {
         </motion.div>
 
         <motion.div
-          className="problem-stat"
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+          className="problem-impact-card glass-strong"
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <motion.span 
-            className="stat-number"
-            initial={{ opacity: 0, scale: 0 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.5, type: "spring" }}
-          >
-            30%
-          </motion.span>
-          <span className="stat-text">of online furniture purchases are returned</span>
+          <span className="problem-impact-label">Environmental Impact</span>
+          <h3 className="problem-impact-title">+25% to 30% Carbon Footprint Increase</h3>
+          <p className="problem-impact-text">
+            Each product return adds logistics overhead and contributes to thousands of
+            tons of avoidable carbon emissions.
+          </p>
         </motion.div>
+
       </div>
     </section>
   )
