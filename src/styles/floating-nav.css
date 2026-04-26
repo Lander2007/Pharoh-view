@@ -19,6 +19,31 @@
   margin: 0;
 }
 
+.nav-logo-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.08);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-logo-button:hover {
+  border-color: rgba(212, 175, 55, 0.6);
+  box-shadow: 0 0 16px rgba(212, 175, 55, 0.35);
+}
+
+.nav-logo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
 .nav-item {
   display: flex;
   align-items: center;
@@ -76,6 +101,16 @@
   .nav-item {
     padding: 0.45rem 1rem;
     font-size: 0.75rem;
+  }
+
+  .nav-logo-button {
+    width: 34px;
+    height: 34px;
+  }
+
+  .nav-logo {
+    width: 20px;
+    height: 20px;
   }
 }
 

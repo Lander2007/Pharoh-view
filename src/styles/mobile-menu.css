@@ -60,6 +60,19 @@
   border-bottom: 1px solid rgba(212, 175, 55, 0.2);
 }
 
+.mobile-menu-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.mobile-menu-logo {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.3));
+}
+
 .mobile-menu-header h2 {
   font-size: 1.5rem;
   font-weight: 800;

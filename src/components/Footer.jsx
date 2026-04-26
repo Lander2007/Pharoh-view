@@ -6,10 +6,10 @@ export default function Footer() {
   const currentYear = new Date().getFullYear()
 
   const footerLinks = {
-    Product: ['Features', 'Pricing', 'Security', 'Roadmap'],
-    Company: ['About', 'Blog', 'Careers', 'Contact'],
-    Legal: ['Privacy', 'Terms', 'Cookies', 'Compliance'],
-    Social: ['Twitter', 'Instagram', 'LinkedIn', 'YouTube'],
+    Product: ['Features', 'Security', 'Roadmap'],
+    Company: ['About', 'Contact', 'Careers'],
+    Legal: ['Privacy', 'Terms', 'Cookies'],
+    Social: ['LinkedIn', 'Instagram', 'YouTube'],
   }
 
   return (
@@ -24,9 +24,16 @@ export default function Footer() {
         >
           <div className="footer-section">
             <div className="footer-brand">
+              <img
+                src="/pharoview_logo_splash-removebg-preview.png"
+                alt="Pharoview logo"
+                className="footer-logo"
+                loading="lazy"
+                decoding="async"
+              />
               <h3>PHAROVIEW</h3>
-              <p>The future of furniture shopping is here</p>
-              <div className="brand-tagline">Pharo-Tech: Ancient Wisdom, Future Vision</div>
+              <p>AR-powered confidence for smarter furniture decisions.</p>
+              <div className="brand-tagline">Ancient wisdom, future vision.</div>
             </div>
           </div>
 

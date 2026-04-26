@@ -57,6 +57,19 @@ export default function FloatingNav() {
           transition={{ duration: 0.3 }}
           style={{ x: 0 }}
         >
+          <button
+            type="button"
+            className="nav-logo-button"
+            onClick={() => scrollToSection('hero')}
+            aria-label="Go to home section"
+            title="PHAROVIEW"
+          >
+            <img
+              src="/pharoview_logo_splash-removebg-preview.png"
+              alt="Pharoview logo"
+              className="nav-logo"
+            />
+          </button>
           {navItems.map((item) => (
             <motion.button
               key={item.id}

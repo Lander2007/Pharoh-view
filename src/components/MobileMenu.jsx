@@ -95,7 +95,14 @@ export default function MobileMenu() {
               }}
             >
               <div className="mobile-menu-header">
-                <h2>PHAROVIEW</h2>
+                <div className="mobile-menu-brand">
+                  <img
+                    src="/pharoview_logo_splash-removebg-preview.png"
+                    alt="Pharoview logo"
+                    className="mobile-menu-logo"
+                  />
+                  <h2>PHAROVIEW</h2>
+                </div>
                 <button 
                   onClick={() => setIsOpen(false)} 
                   className="close-button"

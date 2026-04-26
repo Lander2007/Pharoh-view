@@ -36,6 +36,14 @@ export default function Hero() {
           initial="hidden"
           animate="visible"
         >
+          <motion.div variants={itemVariants} className="hero-logo-wrap">
+            <img
+              src="/pharoview_logo_splash-removebg-preview.png"
+              alt="Pharoview logo"
+              className="hero-logo"
+            />
+          </motion.div>
+
           <motion.h1 variants={itemVariants} className="hero-headline">
             Before you pay...
             <span className="text-gradient-gold"> see it in your home</span>
