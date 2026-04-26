@@ -51,15 +51,7 @@ export default function CTA() {
           >
             <div className="feature-item">
               <span className="check">✓</span>
-              <span>Free to download</span>
-            </div>
-            <div className="feature-item">
-              <span className="check">✓</span>
-              <span>Works offline</span>
-            </div>
-            <div className="feature-item">
-              <span className="check">✓</span>
-              <span>No subscription required</span>
+              <span>Free download</span>
             </div>
           </motion.div>
         </motion.div>

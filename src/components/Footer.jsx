@@ -7,10 +7,26 @@ export default function Footer() {
   const currentYear = new Date().getFullYear()
 
   const footerLinks = {
-    Product: ['Features', 'Security', 'Roadmap'],
-    Company: ['About', 'Contact', 'Careers'],
-    Legal: ['Privacy', 'Terms', 'Cookies'],
-    Social: ['LinkedIn', 'Instagram', 'YouTube'],
+    Product: [
+      { label: 'Features', href: '#', external: false },
+      { label: 'Security', href: '#', external: false },
+      { label: 'Roadmap', href: '#', external: false },
+    ],
+    Company: [
+      { label: 'About', href: '#', external: false },
+      { label: 'Contact', href: '#', external: false },
+      { label: 'Careers', href: '#', external: false },
+    ],
+    Legal: [
+      { label: 'Privacy', href: '#', external: false },
+      { label: 'Terms', href: '#', external: false },
+      { label: 'Cookies', href: '#', external: false },
+    ],
+    Social: [
+      { label: 'LinkedIn', href: 'https://www.linkedin.com', external: true },
+      { label: 'Instagram', href: 'https://www.instagram.com', external: true },
+      { label: 'YouTube', href: 'https://www.youtube.com', external: true },
+    ],
   }
 
   return (
@@ -41,6 +57,18 @@ export default function Footer() {
                 <p>WE Applied Technology School</p>
                 <p>Supported by YLF and the Ministry of Environment</p>
               </div>
+              <div className="footer-contact">
+                <a href="mailto:adelmohammed2008262@gmail.com" className="footer-mini-link">adelmohammed2008262@gmail.com</a>
+                <span className="footer-separator">|</span>
+                <a href="mailto:alimohamed1011108@gmail.com" className="footer-mini-link">alimohamed1011108@gmail.com</a>
+                <span className="footer-separator">|</span>
+                <span>Alexandria, Egypt</span>
+              </div>
+              <div className="footer-contact">
+                <a href="tel:+201227758433" className="footer-mini-link">+20 12 27758433</a>
+                <span className="footer-separator">|</span>
+                <a href="tel:+201102069798" className="footer-mini-link">01102069798</a>
+              </div>
             </div>
           </div>
 
@@ -49,9 +77,14 @@ export default function Footer() {
               <h4>{category}</h4>
               <ul>
                 {links.map((link) => (
-                  <li key={link}>
-                    <a href="#" className="footer-link">
-                      {link}
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      className="footer-link"
+                      target={link.external ? '_blank' : undefined}
+                      rel={link.external ? 'noreferrer noopener' : undefined}
+                    >
+                      {link.label}
                     </a>
                   </li>
                 ))}
@@ -69,7 +102,7 @@ export default function Footer() {
         >
           <div className="footer-divider"></div>
           <div className="footer-credits">
-            <p>&copy; {currentYear} PHAROVIEW. All rights reserved.</p>
+            <p>&copy; {currentYear} PHAROVIEW. All rights reserved. Built for Climate Leaders.</p>
             <div className="footer-badges">
               <span className="badge">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
