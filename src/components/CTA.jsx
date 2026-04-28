@@ -32,8 +32,8 @@ export default function CTA({ onIosClick }) {
             </motion.button>
 
             <motion.a
-              href="/pharoview.apk"
-              download="PHAROVIEW.apk"
+              href="/public/PHAROVIEW-Web.apk"
+              download="PHAROVIEW-Web.apk"
               className="btn btn-gold-outline glow-gold"
               style={{ textDecoration: 'none' }}
               whileHover={{ scale: 1.05 }}
