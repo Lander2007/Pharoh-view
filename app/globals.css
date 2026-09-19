@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --sand: #EFE6D8;
+  --sand-deep: #E3D5BE;
+  --ink: #1C1712;
+  --gold: #B8901F;
+  --clay: #8B5E3C;
+  --font-playfair: 'Playfair Display', Georgia, serif;
+  --font-dm-sans: 'DM Sans', system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: auto; /* lenis handles smooth scroll */
+}
+
+body {
+  background-color: #EFE6D8;
+  color: #1C1712;
+  font-family: var(--font-dm-sans);
+  overflow-x: hidden;
+}
+
+/* Hide scrollbar but allow scrolling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 94, 60, 0.3);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 94, 60, 0.5);
+}
+
+/* Focus states */
+*:focus-visible {
+  outline: 2px solid #B8901F;
+  outline-offset: 2px;
+}

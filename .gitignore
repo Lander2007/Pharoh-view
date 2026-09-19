@@ -1,20 +1,62 @@
+# Dependencies
 node_modules/
+.pnpm-store/
+
+# Next.js build output
+.next/
+out/
+build/
 dist/
+
+# TypeScript / Next.js generated files
+*.tsbuildinfo
+next-env.d.ts
+
+# Vercel / Turbo / coverage
+.vercel/
+.turbo/
+coverage/
+.eslintcache
+
+# Env files
 .env
 .env.local
 .env.*.local
+
+# Logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+
+# OS / editor clutter
 .DS_Store
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+
+# Misc caches
 .cache/
 .parcel-cache/
-.next/
-out/
-build/
+
+# Local AI-agent tooling (machine-specific working dirs, not project source)
+# NOTE: .agents/ is intentionally tracked (shared ui-ux-pro-max skill).
+.aider-desk/
+.augment/
+.autohand/
+.bob/
+.claude/
+.codeartsdoer/
+.codebuddy/
+.codemaker/
+.codestudio/
+.figma/
+.kilo/
+.lingma/
+.openhands/
+.windsurf/
+skills/
+skills-lock.json
