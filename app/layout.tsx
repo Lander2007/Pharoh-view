@@ -1,43 +1,25 @@
 import type { Metadata, Viewport } from 'next'
-import { Playfair_Display, DM_Sans, Space_Mono } from 'next/font/google'
 import './globals.css'
-
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-  variable: '--font-playfair',
-  display: 'swap',
-})
-
-const dmSans = DM_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
-  variable: '--font-dm-sans',
-  display: 'swap',
-})
-
-const spaceMono = Space_Mono({
-  weight: ['400', '700'],
-  subsets: ['latin'],
-  variable: '--font-mono',
-  display: 'swap',
-})
+import { LanguageProvider } from '@/lib/i18n'
 
 export const viewport: Viewport = {
-  themeColor: '#EFE6D8',
+  themeColor: '#F5EEE6',
+  width: 'device-width',
+  initialScale: 1,
 }
 
 export const metadata: Metadata = {
-  title: 'PHAROVIEW — AR Furniture Preview',
-  description: 'See your furniture in your home before you buy. AR-powered confidence for smarter furniture decisions.',
+  title: 'PHAROVIEW — Architectural AR Spatial Experience',
+  description: 'See furniture in your home before you pay. Millimeter-accurate AR spatial certainty, eliminating returns and waste.',
   icons: {
     icon: [
-      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/logo.png', sizes: 'any', type: 'image/png' },
       { url: '/favicon.ico', sizes: 'any' },
     ],
+    shortcut: '/favicon.ico',
     apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+      { url: '/logo.png', sizes: '180x180', type: 'image/png' },
     ],
   },
   manifest: '/site.webmanifest',
@@ -49,12 +31,19 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html
-      lang="en"
-      className={`${playfair.variable} ${dmSans.variable} ${spaceMono.variable}`}
-    >
-      <body className="bg-sand text-ink antialiased selection:bg-gold/30 selection:text-ink">
-        {children}
+    <html lang="en" className="scroll-smooth bg-[#F5EEE6] notranslate" translate="no" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="icon" href="/logo nice canva.jpg" />
+      </head>
+      <body
+        className="bg-[#F5EEE6] text-[#1C1917] antialiased selection:bg-[#C89D54]/25 selection:text-[#1C1917] min-h-screen overflow-x-hidden"
+        suppressHydrationWarning
+      >
+        <LanguageProvider>
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   )

@@ -12,13 +12,13 @@ interface RadialProgressRingProps {
 }
 
 const SEGMENTS = [
-  { index: '01', name: 'SURFACE SCAN', color: '#B8901F' }, // Gold
-  { index: '02', name: 'SCALE CHECK', color: '#8B5E3C' }, // Clay
-  { index: '03', name: 'MATERIAL SHIFT', color: '#D4A017' }, // Bright Gold
-  { index: '04', name: 'PLACEMENT LOCK', color: '#9E5B32' }, // Terracotta Clay
-  { index: '05', name: 'LIGHT MATCH', color: '#B8901F' }, // Egyptian Gold
-  { index: '06', name: 'ROOM FIT', color: '#7E4522' }, // Burnt Clay
-  { index: '07', name: 'TRUE SCALE', color: '#E5B83B' }, // Radiant Gold
+  { index: '01', name: 'SURFACE SCAN', color: '#C89D54' }, // Muted Gold
+  { index: '02', name: 'SCALE CHECK', color: '#E9C46A' }, // Luminous Gold
+  { index: '03', name: 'MATERIAL SHIFT', color: '#B8901F' }, // Deep Gold
+  { index: '04', name: 'PLACEMENT LOCK', color: '#D4A373' }, // Warm Terracotta
+  { index: '05', name: 'LIGHT MATCH', color: '#C89D54' }, // Muted Gold
+  { index: '06', name: 'ROOM FIT', color: '#C8A02E' }, // Warm Antique Gold
+  { index: '07', name: 'TRUE SCALE', color: '#F3D068' }, // Radiant Gold
 ]
 
 /**
@@ -50,7 +50,7 @@ export default function RadialProgressRing({
   const totalGap = gap * numSegments
   const arcSpan = (Math.PI * 2 - totalGap) / numSegments
 
-  // Pre-generate background track geometries (unfilled ink outlines)
+  // Pre-generate background track geometries (unfilled gold track outlines)
   const trackGeometries = useMemo(() => {
     return SEGMENTS.map((_, i) => {
       const startAngle = i * (arcSpan + gap)
@@ -58,11 +58,11 @@ export default function RadialProgressRing({
     })
   }, [radius, arcSpan, gap])
 
-  // Track material: neutral ink-toned outline at low opacity
+  // Track material: subtle Pharo Gold outline at low opacity
   const trackMaterial = useMemo(
     () =>
       new THREE.MeshBasicMaterial({
-        color: new THREE.Color('#1C1712'),
+        color: new THREE.Color('#D4AF37'),
         transparent: true,
         opacity: 0.20,
         side: THREE.DoubleSide,
@@ -71,7 +71,7 @@ export default function RadialProgressRing({
     [],
   )
 
-  // Segment fill materials with gold and clay tones
+  // Segment fill materials with gold and sparse cyan tones
   const fillMaterials = useMemo(() => {
     return SEGMENTS.map(
       (seg) =>
@@ -85,11 +85,11 @@ export default function RadialProgressRing({
     )
   }, [])
 
-  // Active glint bead material
+  // Active glint bead material (electric cyan)
   const beadMaterial = useMemo(
     () =>
       new THREE.MeshBasicMaterial({
-        color: new THREE.Color('#FAF5EC'),
+        color: new THREE.Color('#00f3ff'),
       }),
     [],
   )

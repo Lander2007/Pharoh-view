@@ -1,11 +1,11 @@
 {
-  "name": "PHAROVIEW — AR Furniture Preview",
+  "name": "PHAROVIEW — Architectural AR Spatial Experience",
   "short_name": "PHAROVIEW",
-  "description": "See your furniture in your home before you buy. AR-powered confidence for smarter furniture decisions.",
+  "description": "See your furniture in your home before you pay. AR-powered confidence for smarter furniture decisions.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#EFE6D8",
-  "theme_color": "#EFE6D8",
+  "background_color": "#F5EEE6",
+  "theme_color": "#F5EEE6",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",

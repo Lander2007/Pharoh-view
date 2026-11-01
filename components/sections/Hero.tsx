@@ -1,113 +1,181 @@
 'use client'
 
-import Link from 'next/link'
+import { useEffect, useRef } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { sceneState, useSceneState } from '@/lib/sceneState'
+import { useLanguage } from '@/lib/i18n'
+
+gsap.registerPlugin(ScrollTrigger)
 
 export default function Hero() {
+  const { t, isRTL, lang } = useLanguage()
+  const { materialVariant } = useSceneState()
+  const sectionRef = useRef<HTMLElement>(null)
+  const leftColRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const ctx = gsap.context(() => {
+      // Gentle parallax fade on scroll without breaking visibility or background
+      gsap.to(leftColRef.current, {
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 0.5,
+        },
+        y: -40,
+        opacity: 0.35,
+        ease: 'none',
+      })
+    }, sectionRef)
+
+    return () => ctx.revert()
+  }, [isRTL, lang])
+
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex items-center pt-28 pb-16 px-6 lg:px-12"
-      style={{ background: 'transparent' }}
+      ref={sectionRef}
+      className="relative w-full min-h-screen bg-[#F4EFE6] overflow-hidden select-none"
     >
-      {/* Subtle, soft asymmetric backdrop only behind text on left to ensure maximum legibility */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            'radial-gradient(ellipse 60% 75% at 20% 50%, rgba(239,230,216,0.92) 0%, rgba(239,230,216,0.55) 55%, transparent 100%)',
-        }}
-      />
+      {/* Subtle Architectural Blueprint Grid (Unified single tone) */}
+      <div className="absolute inset-0 bg-blueprint-grid opacity-15 pointer-events-none" />
 
-      <div className="relative z-10 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-        {/* Left Column: Asymmetric Left-Aligned Editorial Text Block */}
-        <div className="lg:col-span-7 max-w-2xl text-left">
-          {/* Eyebrow Label with Monospace Type Pairing */}
-          <div className="flex items-center gap-3 mb-5">
-            <span className="w-8 h-px bg-clay/40" />
-            <p className="font-mono text-xs uppercase tracking-[0.24em] text-clay font-medium">
-              [ 01 / AR SPATIAL SCANNER ]
-            </p>
-          </div>
+      {/* 12-Column Swiss Architectural Grid Container */}
+      <div className="relative z-10 max-w-[1440px] mx-auto min-h-[calc(100vh-76px)] mt-[76px] grid grid-cols-1 lg:grid-cols-12 items-center px-[4vw] py-12 lg:py-0">
+        {/* Left Editorial Column (Cols 1 to 6) */}
+        <div
+          ref={leftColRef}
+          className="lg:col-span-6 flex flex-col justify-center text-left rtl:text-right py-8 lg:py-16"
+        >
+          {/* Eyebrow */}
+          <p className="font-mono text-[11px] font-semibold tracking-[0.2em] rtl:tracking-normal text-[#8C6239] uppercase mb-6">
+            &mdash; {t.hero.eyebrow}
+          </p>
 
-          {/* Primary Statement */}
-          <h1 className="font-serif text-5xl sm:text-6xl lg:text-[76px] font-bold text-ink leading-[1.02] tracking-tight mb-6">
-            Before you pay&mdash;
-            <br />
-            <span className="font-serif font-normal italic text-clay">
-              see it in your home.
+          {/* Flawless 2-Line Headline (white-space: nowrap prevents orphan em-dash) */}
+          <h1 className="font-serif leading-[1.05] tracking-tight rtl:tracking-normal">
+            <span className="block font-bold text-[clamp(2.9rem,4.8vw,5.2rem)] text-[#1C1917] whitespace-nowrap">
+              {t.hero.headlinePart1}
+            </span>
+            <span className="block font-normal italic rtl:not-italic text-[clamp(2.9rem,4.8vw,5.2rem)] text-[#8C6239] mt-1.5">
+              {t.hero.headlinePart2}
             </span>
           </h1>
 
-          {/* Body Text */}
-          <p className="font-sans text-base sm:text-lg text-ink/75 max-w-xl leading-relaxed mb-8">
-            PHAROVIEW uses augmented reality to place true-to-scale furniture in your space
-            before you commit. No surprises. No returns. True spatial certainty.
+          {/* Editorial Body Copy */}
+          <p className="font-sans text-[1.02rem] text-[#4A443F] leading-[1.65] max-w-[460px] mt-7">
+            {t.hero.body}
           </p>
 
-          {/* Technical Specs Metadata Strip */}
-          <div className="flex flex-wrap items-center gap-4 sm:gap-6 py-3.5 border-y border-clay/20 font-mono text-[11px] uppercase tracking-[0.16em] text-ink/65 mb-9">
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-gold" />
-              <span>LiDAR Mapping</span>
-            </div>
-            <span className="text-clay/40">&bull;</span>
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-clay" />
-              <span>Millimeter Scale</span>
-            </div>
-            <span className="text-clay/40">&bull;</span>
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-ink/70" />
-              <span>Zero Returns</span>
-            </div>
+          {/* Telemetry Specs Row */}
+          <div className="mt-7 flex flex-wrap items-center gap-6 font-mono text-[11px] tracking-[0.12em] rtl:tracking-normal text-[#6E655F] uppercase">
+            <span className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#1C1917]" />
+              {t.hero.lidarMapping}
+            </span>
+            <span className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#8C6239]" />
+              {t.hero.millimeterScale}
+            </span>
+            <span className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C89D54]" />
+              {t.hero.zeroReturns}
+            </span>
           </div>
 
-          {/* Actions */}
-          <div className="flex flex-wrap items-center gap-4">
+          {/* Sharp Architectural CTA Row */}
+          <div className="mt-9 flex flex-wrap items-center gap-4">
+            {/* Download iOS Button */}
             <a
-              href="#"
-              className="group inline-flex items-center gap-3 bg-ink text-sand font-mono text-xs uppercase tracking-wider px-6 py-3.5 hover:bg-gold hover:text-ink transition-all duration-200"
+              href="#cta"
+              className="bg-[#1C1917] text-[#F4EFE6] hover:bg-[#8C6239] rounded-none h-12 px-6 font-mono text-xs font-bold uppercase tracking-wider transition-colors inline-flex items-center justify-center cursor-pointer shadow-sm"
             >
-              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" aria-hidden="true">
-                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
-              </svg>
-              <span>Download for iOS</span>
+              {t.hero.downloadIos}
             </a>
 
+            {/* Android APK Download Button */}
             <a
-              href="#"
-              className="group inline-flex items-center gap-3 border border-ink/40 text-ink font-mono text-xs uppercase tracking-wider px-6 py-3.5 hover:border-gold hover:text-gold transition-all duration-200"
+              href="/app-release.apk"
+              download="PharoView-AR.apk"
+              className="border border-[#1C1917] text-[#1C1917] hover:bg-[#1C1917] hover:text-[#F4EFE6] rounded-none h-12 px-6 font-mono text-xs font-bold uppercase tracking-wider transition-colors inline-flex items-center justify-center cursor-pointer"
             >
-              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" aria-hidden="true">
-                <path d="M3.18 23.76c.33.18.72.2 1.08.04l12.2-6.93-2.51-2.51-10.77 9.4zm-.96-20.49c-.14.25-.22.55-.22.88v19.7c0 .33.08.63.22.88l.08.07L13.5 12.5v-.25L2.3 3.2l-.08.07zM20.6 10.3l-2.46-1.4-2.77 2.77 2.77 2.77 2.49-1.42c.71-.4.71-1.06-.03-1.72zM4.26.22L16.46 7.17l-2.51 2.51L3.18.27c.36-.16.75-.14 1.08-.05z" />
-              </svg>
-              <span>Android</span>
+              {t.hero.downloadAndroid}
             </a>
 
-            <Link
-              href="/chair"
-              className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-gold hover:text-clay transition-colors px-3 py-2"
+            {/* Minimalist Inspect Link Button */}
+            <button
+              type="button"
+              onClick={() => sceneState.toggleInspectMode()}
+              className="border-b border-[#8C6239] text-[#8C6239] hover:text-[#1C1917] hover:border-[#1C1917] py-2 px-1 font-mono text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer bg-transparent"
             >
-              <span>Inspect 3D Geometry &rarr;</span>
-            </Link>
+              {t.hero.inspect3d}
+            </button>
           </div>
         </div>
 
-        {/* Right Column: Open spatial focal area for 3D Chair and Radial Progress Ring */}
-        <div className="hidden lg:flex lg:col-span-5 flex-col justify-end items-end h-full pointer-events-none pb-12">
-          <div className="bg-sand/80 backdrop-blur-md p-4 border border-clay/20 text-right font-mono text-[10px] tracking-wider text-ink/75 max-w-[220px]">
-            <p className="font-bold text-ink text-xs mb-1">SPECIMEN [01]</p>
-            <p className="text-clay">SCANDINAVIAN ARMCHAIR</p>
-            <p className="text-ink/50 mt-1">100% CONTIGUOUS SOLID</p>
-            <p className="text-gold mt-1">SCROLL TO FILL FACETS</p>
+        {/* Right 3D Stage Column (Cols 7 to 12) */}
+        <div className="lg:col-span-6 h-[480px] lg:h-[calc(100vh-140px)] flex flex-col justify-end items-center pb-6 pointer-events-none">
+          {/* Minimalist Horizontal Finish Selector Dock strictly BELOW the chair */}
+          <div className="pointer-events-auto flex items-center border border-[#1C1917]/20 bg-[#F4EFE6]/80 backdrop-blur-md rounded-none shadow-sm">
+            {/* Natural Oak */}
+            <button
+              type="button"
+              onClick={() => sceneState.setMaterialVariant('oak')}
+              className={`px-4 py-2 font-mono text-[10px] tracking-wider uppercase font-semibold transition-colors cursor-pointer ${
+                materialVariant === 'oak'
+                  ? 'bg-[#1C1917] text-[#F4EFE6]'
+                  : 'text-[#1C1917]/70 hover:text-[#1C1917]'
+              }`}
+            >
+              {t.hero.swatchOak}
+            </button>
+
+            <span className="h-4 w-px bg-[#1C1917]/15" />
+
+            {/* Warm Bouclé */}
+            <button
+              type="button"
+              onClick={() => sceneState.setMaterialVariant('boucle')}
+              className={`px-4 py-2 font-mono text-[10px] tracking-wider uppercase font-semibold transition-colors cursor-pointer ${
+                materialVariant === 'boucle'
+                  ? 'bg-[#1C1917] text-[#F4EFE6]'
+                  : 'text-[#1C1917]/70 hover:text-[#1C1917]'
+              }`}
+            >
+              {t.hero.swatchBoucle}
+            </button>
+
+            <span className="h-4 w-px bg-[#1C1917]/15" />
+
+            {/* Smoked Walnut */}
+            <button
+              type="button"
+              onClick={() => sceneState.setMaterialVariant('walnut')}
+              className={`px-4 py-2 font-mono text-[10px] tracking-wider uppercase font-semibold transition-colors cursor-pointer ${
+                materialVariant === 'walnut'
+                  ? 'bg-[#1C1917] text-[#F4EFE6]'
+                  : 'text-[#1C1917]/70 hover:text-[#1C1917]'
+              }`}
+            >
+              {t.hero.swatchWalnut}
+            </button>
+
+            <span className="h-4 w-px bg-[#1C1917]/15" />
+
+            {/* Minimal Orbit Toggle */}
+            <button
+              type="button"
+              onClick={() => sceneState.toggleInspectMode()}
+              className="px-3.5 py-2 font-mono text-[10px] tracking-wider uppercase font-bold text-[#8C6239] hover:text-[#1C1917] transition-colors cursor-pointer"
+            >
+              {t.hero.orbit360}
+            </button>
           </div>
         </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-60">
-        <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-ink">Scroll</span>
-        <div className="w-px h-7 bg-ink/40 animate-pulse" />
       </div>
     </section>
   )

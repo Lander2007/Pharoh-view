@@ -1,59 +1,57 @@
 // Chair scroll-stage keyframes mapped to scroll progress 0-1.
-// Each major page section acts as a "stage": entering it eases the shattered
-// chair to a new orientation / zoom / position preset (smoothly interpolated,
-// never snapped). CTA returns to a hero-like framing.
-//
-// Layout logic: text-heavy sections keep the object on the opposite side so
-// the fixed 3D layer never fights copy legibility (radial backdrops in each
-// section add extra separation).
+// Pinned Cinematic Movie Scroll Sequence:
+// - Hero (0 to 0.14): starts centered at scale 0.92, dollys closer (scale 1.18) at mid-pin,
+//   then glides to right (+28vw / x: 1.65) docking seamlessly into Section 02.
 
 export interface ChairStop {
   progress: number
-  rotationY: number // radians, around Y (facet-facing angle)
-  rotationX: number // radians, slight tilt per stage
-  x: number // world units (off-center behind text)
+  rotationY: number // radians, around Y
+  rotationX: number // radians, slight tilt
+  x: number // world units
   y: number
-  scale: number // zoom (camera-equivalent)
+  scale: number // zoom
 }
 
 export interface ChairStage {
-  index: string // "01"
-  label: string // "SURFACE SCAN"
-  /** scroll progress at which this stage becomes active */
+  index: string
+  label: string
   progress: number
 }
 
 export const CHAIR_STAGES: ChairStage[] = [
-  { index: '01', label: 'SURFACE SCAN', progress: 0 }, // Hero
-  { index: '02', label: 'SCALE CHECK', progress: 0.18 }, // Problem
-  { index: '03', label: 'MATERIAL SHIFT', progress: 0.35 }, // Solution
-  { index: '04', label: 'PLACEMENT LOCK', progress: 0.5 }, // How it works
-  { index: '05', label: 'LIGHT MATCH', progress: 0.64 }, // Value prop
-  { index: '06', label: 'ROOM FIT', progress: 0.78 }, // SDGs
-  { index: '07', label: 'TRUE SCALE', progress: 0.92 }, // CTA
+  { index: '01', label: 'SURFACE SCAN', progress: 0 },
+  { index: '02', label: 'SCALE CHECK', progress: 0.18 },
+  { index: '03', label: 'MATERIAL SHIFT', progress: 0.38 },
+  { index: '04', label: 'PLACEMENT LOCK', progress: 0.54 },
+  { index: '05', label: 'LIGHT MATCH', progress: 0.68 },
+  { index: '06', label: 'ROOM FIT', progress: 0.82 },
+  { index: '07', label: 'TRUE SCALE', progress: 0.94 },
 ]
 
 export const CHAIR_STOPS: ChairStop[] = [
-  // Hero (0-0.14): wide shot, clear 3/4 isometric angle showing all 4 legs, seat, backrest
-  { progress: 0, rotationY: 0.45, rotationX: 0.10, x: 0, y: -0.15, scale: 1.25 },
-  // Problem (0.15-0.28): zoomed out, shifted right (copy sits left)
-  { progress: 0.18, rotationY: Math.PI * 0.15, rotationX: 0.14, x: 1.7, y: -0.5, scale: 1.0 },
-  // Solution (0.29-0.42): closer, rotated to a new facet-facing angle, shifted left (copy sits right)
-  { progress: 0.35, rotationY: Math.PI, rotationX: -0.08, x: -1.6, y: -0.5, scale: 1.1 },
-  // How it works (0.43-0.56): centered, mid zoom
-  { progress: 0.5, rotationY: Math.PI * 1.25, rotationX: 0.1, x: 0, y: -0.3, scale: 0.95 },
-  // Value prop (0.57-0.70): shifted right, quarter turn
-  { progress: 0.64, rotationY: Math.PI * 1.5, rotationX: -0.05, x: 1.6, y: -0.5, scale: 1.05 },
-  // SDGs (0.71-0.84): shifted left, zoomed out
-  { progress: 0.78, rotationY: Math.PI * 1.75, rotationX: 0.12, x: -1.3, y: -0.5, scale: 0.9 },
-  // CTA (0.85-1.0): returns to hero-like framing
-  { progress: 1.0, rotationY: Math.PI * 2, rotationX: 0.06, x: 0, y: -0.5, scale: 1.3 },
+  // 0% Scroll: Center-Right (+14vw) inside AR Viewfinder HUD, scale 1.05, sits in front of split doors
+  { progress: 0, rotationY: 0.35, rotationX: 0.08, x: 1.35, y: -0.22, scale: 1.05 },
+  // ~50% Pinned Hero Scroll: Background doors split open, chair stays in view arcing toward Section 02
+  { progress: 0.07, rotationY: 0.48, rotationX: 0.10, x: 1.50, y: -0.32, scale: 1.02 },
+  // 100% Pinned Hero Scroll -> Transition to Problem: Rotates 35° facing Section 02 copy and docks in right column
+  { progress: 0.14, rotationY: 0.61, rotationX: 0.12, x: 1.65, y: -0.45, scale: 1.0 },
+  // Problem Section (0.15 - 0.32): Docked on right (copy sits left), facing inward
+  { progress: 0.26, rotationY: 0.61, rotationX: 0.12, x: 1.65, y: -0.45, scale: 1.0 },
+  // Solution Section (0.33 - 0.48): Closer, shifted left
+  { progress: 0.40, rotationY: Math.PI, rotationX: -0.06, x: -1.55, y: -0.45, scale: 1.1 },
+  // How it works / Process Section (0.49 - 0.64): Centered for station inspection
+  { progress: 0.55, rotationY: Math.PI * 1.25, rotationX: 0.08, x: 0, y: -0.28, scale: 1.05 },
+  // Value prop Section (0.65 - 0.78): Shifted right
+  { progress: 0.70, rotationY: Math.PI * 1.5, rotationX: -0.05, x: 1.55, y: -0.45, scale: 1.05 },
+  // SDGs Section (0.79 - 0.90): Shifted left
+  { progress: 0.84, rotationY: Math.PI * 1.75, rotationX: 0.10, x: -1.3, y: -0.45, scale: 0.9 },
+  // CTA Section (0.91 - 1.0): Centered hero-like framing
+  { progress: 1.0, rotationY: Math.PI * 2, rotationX: 0.06, x: 0, y: -0.45, scale: 1.28 },
 ]
 
 export function interpolateChairState(progress: number): Omit<ChairStop, 'progress'> {
   const stops = CHAIR_STOPS
 
-  // Find surrounding stops
   let lower = stops[0]
   let upper = stops[stops.length - 1]
 
@@ -75,7 +73,7 @@ export function interpolateChairState(progress: number): Omit<ChairStop, 'progre
     }
 
   const t = (progress - lower.progress) / (upper.progress - lower.progress)
-  // Ease in-out cubic for smooth stage transitions (no snapping)
+  // Ease in-out cubic
   const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
 
   return {
@@ -87,7 +85,6 @@ export function interpolateChairState(progress: number): Omit<ChairStop, 'progre
   }
 }
 
-/** Resolve which numbered stage label is active for a given scroll progress. */
 export function getStageForProgress(progress: number): ChairStage {
   let active = CHAIR_STAGES[0]
   for (const stage of CHAIR_STAGES) {
@@ -96,14 +93,6 @@ export function getStageForProgress(progress: number): ChairStage {
   return active
 }
 
-/**
- * Calculates a 0->1 per-section progress that drives the wireframe-to-solid facet reveal.
- * - When a section first enters view, reveal starts at 0 (translucent ink wireframe).
- * - As the user scrolls through the section (0 -> 0.70), facets fill in progressively bottom-to-top.
- * - Stays 100% solid (1.0) while the user reads the section.
- * - Transitions back to wireframe (1.0 -> 0.0) as the user leaves into the next section.
- * - At the final CTA (progress > 0.96), stays 100% solid.
- */
 export function getSectionRevealProgress(progress: number): number {
   if (progress >= 0.96) return 1.0
 
@@ -124,15 +113,11 @@ export function getSectionRevealProgress(progress: number): number {
 
   const localT = Math.min(Math.max((progress - start) / duration, 0), 1)
 
-  // 0.00 -> 0.65: progressive wireframe-to-solid facet reveal
   if (localT <= 0.65) {
     return localT / 0.65
   }
-  // 0.65 -> 0.88: fully solid while reading section content
   if (localT <= 0.88) {
     return 1.0
   }
-  // 0.88 -> 1.00: transition back to wireframe priming next section
   return (1.0 - localT) / 0.12
 }
-

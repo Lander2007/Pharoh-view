@@ -1,358 +1,365 @@
 'use client'
-import { useRef, useMemo } from 'react'
+
+import { useRef, useMemo, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
+import { useSceneState } from '@/lib/sceneState'
 
 interface ProceduralChairProps {
   targetRotationY: number
-  targetRotationX: number
-  targetX: number
-  targetY: number
-  targetScale: number
-  /**
-   * Wireframe-to-solid reveal progress (0.0 = translucent ink wireframe only, 1.0 = fully solid shaded).
-   * Driven by scroll progress.
-   */
+  targetRotationX?: number
+  targetX?: number
+  targetY?: number
+  targetScale?: number
   revealProgress?: number
-  /** When true (prefers-reduced-motion): stage changes jump-cut. */
+  scrollProgress?: number
   frozen?: boolean
+  hologramOpacity?: number
 }
 
 /**
- * Creates a solid low-poly diamond-faceted crystalline slab:
- * - Outer boundary vertices stay 100% untouched to preserve the chair's exact silhouette.
- * - Interior vertices are displaced along an alternating diamond-cut pattern so adjacent
- *   triangles point in opposing directions (up-right, up-left, down-right, down-left).
- *   This ensures every cut facet catches the sand/gold/clay lighting distinctly like a cut gemstone.
+ * Creates high-fidelity procedural PBR textures for White Oak, Smoked Walnut,
+ * Cream Bouclé, and Oatmeal Linen.
  */
-function createFacetedSlab(
-  width: number,
-  height: number,
-  depth: number,
-  segX: number,
-  segY: number,
-  segZ: number,
-  relief: number,
-  options?: {
-    taperTopX?: number // trapezoidal width taper (backrest broader at shoulders)
-    curveZ?: number    // ergonomic horizontal embrace curve along X
-    scoopY?: number    // ergonomic seat center contour
-  },
-): THREE.BufferGeometry {
-  const geo = new THREE.BoxGeometry(width, height, depth, segX, segY, segZ)
-  const nonIndexed = geo.toNonIndexed()
-  const posAttr = nonIndexed.getAttribute('position')
-  const count = posAttr.count
-
-  const halfW = width / 2
-  const halfH = height / 2
-  const halfD = depth / 2
-  const eps = 0.003
-
-  for (let i = 0; i < count; i++) {
-    let x = posAttr.getX(i)
-    let y = posAttr.getY(i)
-    let z = posAttr.getZ(i)
-
-    const isFrontFace = Math.abs(z - halfD) < eps
-    const isBackFace = Math.abs(z + halfD) < eps
-    const isTopFace = Math.abs(y - halfH) < eps
-    const isBottomFace = Math.abs(y + halfH) < eps
-
-    // 1. Trapezoidal width taper for backrest
-    if (options?.taperTopX && height > 0) {
-      const progressY = (y + halfH) / height
-      const factor = 1 + options.taperTopX * (progressY - 0.5)
-      x *= factor
-    }
-
-    // 2. Ergonomic horizontal embrace curve along X
-    if (options?.curveZ && width > 0) {
-      const nx = x / halfW
-      z -= (1 - Math.cos(nx * Math.PI * 0.5)) * options.curveZ
-    }
-
-    // 3. Ergonomic seat scoop (center dip)
-    if (options?.scoopY && width > 0 && depth > 0) {
-      const nx = Math.abs(x / halfW)
-      const nz = (z + halfD) / depth
-      if (nx < 0.88 && nz > 0.12 && nz < 0.88) {
-        const falloffX = Math.cos(nx * Math.PI * 0.5)
-        const falloffZ = Math.sin((nz - 0.12) / 0.76 * Math.PI)
-        y -= falloffX * falloffZ * options.scoopY
-      }
-    }
-
-    // 4. Diamond-cut facet displacement on interior points
-    // Boundaries are completely untouched so silhouette remains 100% solid, crisp, and intact.
-    const isInteriorX = Math.abs(x) < halfW - eps * 2
-    const isInteriorY = Math.abs(y) < halfH - eps * 2
-    const isInteriorZ = Math.abs(z) < halfD - eps * 2
-
-    if ((isFrontFace || isBackFace) && isInteriorX && isInteriorY) {
-      const freqX = (segX * Math.PI) / width
-      const freqY = (segY * Math.PI) / height
-      const diamond = Math.sin(x * freqX) * Math.sin(y * freqY)
-      const ripple = Math.cos(x * freqX * 0.5 + y * freqY * 0.5) * 0.25
-      const offset = (diamond + ripple) * relief
-      z += isFrontFace ? offset : -offset
-    } else if ((isTopFace || isBottomFace) && isInteriorX && isInteriorZ) {
-      const freqX = (segX * Math.PI) / width
-      const freqZ = (segZ * Math.PI) / depth
-      const diamond = Math.sin(x * freqX) * Math.sin(z * freqZ)
-      const ripple = Math.cos(x * freqX * 0.5 + z * freqZ * 0.5) * 0.25
-      const offset = (diamond + ripple) * relief
-      y += isTopFace ? offset : -offset
-    }
-
-    posAttr.setXYZ(i, x, y, z)
+function createChairTextures() {
+  if (typeof document === 'undefined') {
+    return { oakTex: null, walnutTex: null, boucleTex: null, linenTex: null }
   }
 
-  nonIndexed.computeVertexNormals()
-  return nonIndexed
+  // 1. Natural White Scandinavian Oak (512x512)
+  const oakCanvas = document.createElement('canvas')
+  oakCanvas.width = 512
+  oakCanvas.height = 512
+  const oCtx = oakCanvas.getContext('2d')
+  if (oCtx) {
+    oCtx.fillStyle = '#C89D54'
+    oCtx.fillRect(0, 0, 512, 512)
+
+    oCtx.strokeStyle = 'rgba(175, 128, 68, 0.35)'
+    oCtx.lineWidth = 1.6
+    for (let x = 0; x < 512; x += 5) {
+      oCtx.beginPath()
+      oCtx.moveTo(x, 0)
+      for (let y = 0; y < 512; y += 24) {
+        const offset = Math.sin(y * 0.02 + x * 0.04) * 4 + Math.sin(y * 0.006) * 7
+        oCtx.lineTo(x + offset, y)
+      }
+      oCtx.stroke()
+    }
+
+    // Subtle medullary rays (wood flakes)
+    oCtx.fillStyle = 'rgba(235, 212, 178, 0.22)'
+    for (let i = 0; i < 90; i++) {
+      oCtx.fillRect(Math.random() * 512, Math.random() * 512, 2.5, 12 + Math.random() * 28)
+    }
+  }
+  const oakTex = new THREE.CanvasTexture(oakCanvas)
+  oakTex.wrapS = THREE.RepeatWrapping
+  oakTex.wrapT = THREE.RepeatWrapping
+  oakTex.repeat.set(2, 2)
+  oakTex.colorSpace = THREE.SRGBColorSpace
+
+  // 2. Smoked Royal Walnut (512x512)
+  const walnutCanvas = document.createElement('canvas')
+  walnutCanvas.width = 512
+  walnutCanvas.height = 512
+  const wCtx = walnutCanvas.getContext('2d')
+  if (wCtx) {
+    wCtx.fillStyle = '#3B2618'
+    wCtx.fillRect(0, 0, 512, 512)
+
+    wCtx.strokeStyle = 'rgba(28, 16, 9, 0.45)'
+    wCtx.lineWidth = 2.0
+    for (let x = 0; x < 512; x += 6) {
+      wCtx.beginPath()
+      wCtx.moveTo(x, 0)
+      for (let y = 0; y < 512; y += 24) {
+        const offset = Math.sin(y * 0.015 + x * 0.03) * 6 + Math.cos(y * 0.007) * 11
+        wCtx.lineTo(x + offset, y)
+      }
+      wCtx.stroke()
+    }
+  }
+  const walnutTex = new THREE.CanvasTexture(walnutCanvas)
+  walnutTex.wrapS = THREE.RepeatWrapping
+  walnutTex.wrapT = THREE.RepeatWrapping
+  walnutTex.repeat.set(2, 2)
+  walnutTex.colorSpace = THREE.SRGBColorSpace
+
+  // 3. Tactile Cream Bouclé Fabric (512x512)
+  const boucleCanvas = document.createElement('canvas')
+  boucleCanvas.width = 512
+  boucleCanvas.height = 512
+  const bCtx = boucleCanvas.getContext('2d')
+  if (bCtx) {
+    bCtx.fillStyle = '#FAF6F0'
+    bCtx.fillRect(0, 0, 512, 512)
+
+    const colors = [
+      'rgba(238, 228, 215, 0.6)',
+      'rgba(218, 204, 188, 0.45)',
+      'rgba(255, 255, 255, 0.85)',
+      'rgba(244, 238, 228, 0.7)',
+    ]
+    for (let i = 0; i < 4000; i++) {
+      const cx = Math.random() * 512
+      const cy = Math.random() * 512
+      const r = 1.2 + Math.random() * 3.2
+      bCtx.fillStyle = colors[Math.floor(Math.random() * colors.length)]
+      bCtx.beginPath()
+      bCtx.arc(cx, cy, r, 0, Math.PI * 2)
+      bCtx.fill()
+    }
+  }
+  const boucleTex = new THREE.CanvasTexture(boucleCanvas)
+  boucleTex.wrapS = THREE.RepeatWrapping
+  boucleTex.wrapT = THREE.RepeatWrapping
+  boucleTex.repeat.set(4, 4)
+  boucleTex.colorSpace = THREE.SRGBColorSpace
+
+  // 4. Natural Oatmeal Linen Fabric (512x512)
+  const linenCanvas = document.createElement('canvas')
+  linenCanvas.width = 512
+  linenCanvas.height = 512
+  const lCtx = linenCanvas.getContext('2d')
+  if (lCtx) {
+    lCtx.fillStyle = '#ECE4D8'
+    lCtx.fillRect(0, 0, 512, 512)
+
+    lCtx.fillStyle = 'rgba(195, 180, 160, 0.22)'
+    for (let x = 0; x < 512; x += 3) {
+      lCtx.fillRect(x, 0, 1.2, 512)
+    }
+    for (let y = 0; y < 512; y += 3) {
+      lCtx.fillRect(0, y, 512, 1.2)
+    }
+  }
+  const linenTex = new THREE.CanvasTexture(linenCanvas)
+  linenTex.wrapS = THREE.RepeatWrapping
+  linenTex.wrapT = THREE.RepeatWrapping
+  linenTex.repeat.set(4, 4)
+  linenTex.colorSpace = THREE.SRGBColorSpace
+
+  return { oakTex, walnutTex, boucleTex, linenTex }
 }
 
 /**
- * Builds an authentic, exquisitely proportioned solid low-poly modern armchair:
- * - Authentic Scandinavian/lounge proportions (seat height ~44cm, backrest rake 14°, sturdy splayed legs)
- * - 100% solid contiguous geometry — NO floating parts, NO procedural separation
- * - Crystalline faceted surfaces that catch light distinctly like a cut gemstone
- * - Sand / Gold / Clay palette gradient baked across facets based on key light direction
- * - Per-facet reveal threshold attribute for progressive bottom-to-top wireframe-to-solid transition
- * - Translucent ink-toned wireframe outlining all facets (#1C1712)
+ * Builds the complete Scandinavian Architectural Lounge Armchair:
+ * - Real-world millimeter ergonomics (820mm W x 840mm D x 780mm H, 420mm Seat Height).
+ * - Floor-grounded normalization: base of all four legs touches EXACTLY y = 0.000.
+ * - Center pivot at (0, 0, 0), visual midpoint at y = 0.44m.
+ * - Splayed turned legs with champagne brass ferrules.
+ * - Sculpted flat timber armrests, apron rails, stretchers, and raked backrest.
+ * - Ergonomic plush upholstered seat cushion and curved backrest cushion.
  */
-function buildSolidChair(): {
-  meshGeometry: THREE.BufferGeometry
+function buildArchitecturalArmchair(): {
+  timberGeometry: THREE.BufferGeometry
+  cushionGeometry: THREE.BufferGeometry
+  brassGeometry: THREE.BufferGeometry
   edgeGeometry: THREE.BufferGeometry
+  boundingBoxGeo: THREE.BufferGeometry
 } {
-  const parts: THREE.BufferGeometry[] = []
+  const timberParts: THREE.BufferGeometry[] = []
+  const cushionParts: THREE.BufferGeometry[] = []
+  const brassParts: THREE.BufferGeometry[] = []
 
-  const addPart = (
+  const addTransformed = (
+    list: THREE.BufferGeometry[],
     geo: THREE.BufferGeometry,
     pos: [number, number, number],
     rot: [number, number, number] = [0, 0, 0],
-    scale: [number, number, number] = [1, 1, 1],
+    scale: [number, number, number] = [1, 1, 1]
   ) => {
     const nonIdx = geo.index ? geo.toNonIndexed() : geo.clone()
     const matrix = new THREE.Matrix4()
-    const translation = new THREE.Matrix4().makeTranslation(pos[0], pos[1], pos[2])
-    const rotation = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(rot[0], rot[1], rot[2]))
-    const scaling = new THREE.Matrix4().makeScale(scale[0], scale[1], scale[2])
-    matrix.multiply(translation).multiply(rotation).multiply(scaling)
+    const t = new THREE.Matrix4().makeTranslation(pos[0], pos[1], pos[2])
+    const r = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(rot[0], rot[1], rot[2]))
+    const s = new THREE.Matrix4().makeScale(scale[0], scale[1], scale[2])
+    matrix.multiply(t).multiply(r).multiply(s)
     nonIdx.applyMatrix4(matrix)
-    parts.push(nonIdx)
+    list.push(nonIdx)
   }
 
-  // ==========================================
-  // 1. SEAT CUSHION SLAB
-  // Width 1.18, depth 1.14, thickness 0.14
-  // Subtle 2.5° backward tilt for authentic armchair ergonomics
-  // ==========================================
-  const seatGeo = createFacetedSlab(1.18, 0.14, 1.14, 6, 2, 6, 0.030, {
-    scoopY: 0.028,
-  })
-  addPart(seatGeo, [0, -0.06, 0.02], [-0.04, 0, 0])
+  // =========================================================================
+  // 1. TURNED SOLID HARDWOOD LEGS & BRASS FERRULES (Grounding at y = 0.000)
+  // =========================================================================
+  // Front Legs: Height 0.38m, splayed forward (0.07 rad) and outward (±0.06 rad).
+  // Cylinder height 0.38m, center y = 0.19m -> bottom at y = 0.000!
+  const frontLegGeo = new THREE.CylinderGeometry(0.026, 0.017, 0.38, 16)
+  addTransformed(timberParts, frontLegGeo, [-0.34, 0.19, 0.26], [0.07, 0, 0.06])
+  addTransformed(timberParts, frontLegGeo, [0.34, 0.19, 0.26], [0.07, 0, -0.06])
 
-  // ==========================================
-  // 2. SEAT APRON FRAME (structural perimeter rails under seat cushion)
-  // Flush directly against seat bottom (y = -0.13 to -0.22)
-  // ==========================================
-  const apronFront = createFacetedSlab(1.04, 0.09, 0.05, 4, 1, 1, 0.012)
-  addPart(apronFront, [0, -0.15, 0.46], [-0.04, 0, 0])
+  // Front Brass Ferrules (y = 0.00 to 0.036m)
+  const frontFerruleGeo = new THREE.CylinderGeometry(0.0185, 0.0175, 0.036, 16)
+  addTransformed(brassParts, frontFerruleGeo, [-0.35, 0.018, 0.27], [0.07, 0, 0.06])
+  addTransformed(brassParts, frontFerruleGeo, [0.35, 0.018, 0.27], [0.07, 0, -0.06])
 
-  const apronBack = createFacetedSlab(0.98, 0.09, 0.05, 4, 1, 1, 0.012)
-  addPart(apronBack, [0, -0.13, -0.44], [-0.04, 0, 0])
+  // Rear Legs: Height 0.42m, Scandinavian sweep raked backward (-0.22 rad) and outward (±0.06 rad).
+  // Center y = 0.20m -> bottom touches y = 0.000!
+  const rearLegGeo = new THREE.CylinderGeometry(0.028, 0.018, 0.42, 16)
+  addTransformed(timberParts, rearLegGeo, [-0.33, 0.20, -0.28], [-0.22, 0, 0.06])
+  addTransformed(timberParts, rearLegGeo, [0.33, 0.20, -0.28], [-0.22, 0, -0.06])
 
-  const apronSide = createFacetedSlab(0.05, 0.09, 0.90, 1, 1, 4, 0.012)
-  addPart(apronSide, [-0.50, -0.14, 0.01], [-0.04, 0, 0])
-  addPart(apronSide, [0.50, -0.14, 0.01], [-0.04, 0, 0])
+  // Rear Brass Ferrules (y = 0.00 to 0.038m)
+  const rearFerruleGeo = new THREE.CylinderGeometry(0.0195, 0.0185, 0.038, 16)
+  addTransformed(brassParts, rearFerruleGeo, [-0.345, 0.019, -0.325], [-0.22, 0, 0.06])
+  addTransformed(brassParts, rearFerruleGeo, [0.345, 0.019, -0.325], [-0.22, 0, -0.06])
 
-  // ==========================================
-  // 3. BACKREST PANEL & INTEGRATED STILES
-  // Ergonomically raked backward (14°), subtle horizontal curve embracing the back
-  // Top crest caps both backrest panel and upright stiles cleanly with NO protrusions
-  // ==========================================
-  const rake = -0.24 // ~14 degrees
+  // =========================================================================
+  // 2. SEAT APRON FRAME & ARCHITECTURAL STRETCHERS
+  // =========================================================================
+  // Front & Back Apron Timber Rails
+  const frontApronGeo = new THREE.BoxGeometry(0.66, 0.045, 0.035)
+  addTransformed(timberParts, frontApronGeo, [0, 0.365, 0.24])
 
-  // Main backrest faceted panel (height 0.80) with pronounced diamond-cut facets
-  const backrestGeo = createFacetedSlab(1.06, 0.80, 0.08, 6, 5, 2, 0.036, {
-    taperTopX: 0.10, // subtly wider at shoulder level
-    curveZ: 0.05,    // gentle horizontal embrace
-  })
-  addPart(backrestGeo, [0, 0.40, -0.48], [rake, 0, 0])
+  const backApronGeo = new THREE.BoxGeometry(0.62, 0.045, 0.035)
+  addTransformed(timberParts, backApronGeo, [0, 0.345, -0.21])
 
-  // Upright support stiles connecting bottom frame to backrest top (flush at top)
-  const stileGeo = createFacetedSlab(0.065, 0.88, 0.065, 1, 5, 1, 0.010)
-  addPart(stileGeo, [-0.49, 0.36, -0.49], [rake, 0, 0])
-  addPart(stileGeo, [0.49, 0.36, -0.49], [rake, 0, 0])
+  // Side Apron Timber Rails (with slight 3° recline toward rear)
+  const sideApronGeo = new THREE.BoxGeometry(0.035, 0.045, 0.44)
+  addTransformed(timberParts, sideApronGeo, [-0.33, 0.355, 0.015], [-0.04, 0, 0])
+  addTransformed(timberParts, sideApronGeo, [0.33, 0.355, 0.015], [-0.04, 0, 0])
 
-  // Top crest rail capping the entire backrest cleanly
-  const topCrestGeo = createFacetedSlab(1.14, 0.06, 0.08, 5, 1, 1, 0.014)
-  addPart(topCrestGeo, [0, 0.79, -0.58], [rake, 0, 0])
+  // Structural Side Stretchers (connecting front & rear legs)
+  const sideStretcherGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.52, 12)
+  addTransformed(timberParts, sideStretcherGeo, [-0.34, 0.12, 0.0], [Math.PI / 2 + 0.04, 0, 0])
+  addTransformed(timberParts, sideStretcherGeo, [0.34, 0.12, 0.0], [Math.PI / 2 + 0.04, 0, 0])
 
-  // Lumbar support lower crossbar
-  const lumbarGeo = createFacetedSlab(1.02, 0.06, 0.06, 4, 1, 1, 0.010)
-  addPart(lumbarGeo, [0, 0.02, -0.40], [rake, 0, 0])
+  // Rear Cross Stretcher
+  const rearStretcherGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.64, 12)
+  addTransformed(timberParts, rearStretcherGeo, [0, 0.13, -0.29], [0, 0, Math.PI / 2])
 
-  // ==========================================
-  // 4. FOUR SPLAYED FACETED LEGS
-  // Grounded armchair proportions: leg height 0.52 (seat bottom at -0.18, floor at -0.70)
-  // Tapered hexagonal cross-section with natural splayed stance
-  // ==========================================
-  const legGeo = new THREE.CylinderGeometry(0.045, 0.028, 0.52, 6, 3)
+  // =========================================================================
+  // 3. SCULPTURAL ARCHITECTURAL ARMRESTS & FRONT POSTS
+  // =========================================================================
+  // Front Vertical Arm Upright Posts (connecting seat apron at y = 0.37 to armrest at y = 0.53)
+  const armPostGeo = new THREE.BoxGeometry(0.035, 0.16, 0.035)
+  addTransformed(timberParts, armPostGeo, [-0.36, 0.45, 0.23], [0.04, 0, 0])
+  addTransformed(timberParts, armPostGeo, [0.36, 0.45, 0.23], [0.04, 0, 0])
 
-  // Front-Left leg: splayed outward and forward
-  addPart(legGeo, [-0.49, -0.44, 0.44], [0.08, 0, 0.09])
-  // Front-Right leg: splayed outward and forward
-  addPart(legGeo, [0.49, -0.44, 0.44], [0.08, 0, -0.09])
-  // Rear-Left leg: raked backward and outward for iconic chair stance
-  addPart(legGeo, [-0.47, -0.44, -0.44], [-0.16, 0, 0.09])
-  // Rear-Right leg: raked backward and outward
-  addPart(legGeo, [0.47, -0.44, -0.44], [-0.16, 0, -0.09])
+  // Sculpted Flat Timber Arm Rails (Length 0.64m, Width 0.08m, Thickness 0.025m at y = 0.54m)
+  const armRailGeo = new THREE.BoxGeometry(0.08, 0.025, 0.64)
+  addTransformed(timberParts, armRailGeo, [-0.38, 0.54, 0.02], [-0.03, 0, 0])
+  addTransformed(timberParts, armRailGeo, [0.38, 0.54, 0.02], [-0.03, 0, 0])
 
-  // ==========================================
-  // 5. CROSS STRETCHERS (Structural bracing between legs)
-  // Positioned at lower third (y = -0.52)
-  // ==========================================
-  const sideStretcherGeo = new THREE.CylinderGeometry(0.018, 0.018, 0.86, 5, 1)
-  addPart(sideStretcherGeo, [-0.49, -0.52, 0.01], [Math.PI / 2, 0, 0])
-  addPart(sideStretcherGeo, [0.49, -0.52, 0.01], [Math.PI / 2, 0, 0])
+  // Brass joinery pins accenting arm tops
+  const brassPinGeo = new THREE.CylinderGeometry(0.007, 0.007, 0.028, 12)
+  addTransformed(brassParts, brassPinGeo, [-0.38, 0.553, 0.23])
+  addTransformed(brassParts, brassPinGeo, [0.38, 0.553, 0.23])
 
-  const rearStretcherGeo = new THREE.CylinderGeometry(0.018, 0.018, 0.88, 5, 1)
-  addPart(rearStretcherGeo, [0, -0.46, -0.44], [0, 0, Math.PI / 2])
+  // =========================================================================
+  // 4. BACKREST REAR STILES & CREST RAIL (15° Architectural Rake)
+  // =========================================================================
+  const backRake = -0.26 // ~15° backward recline
 
-  // ==========================================
-  // 6. SCULPTED FACETED ARMRESTS
-  // Horizontal arm pads with crystalline facets and vertical support posts
-  // ==========================================
-  const armPadGeo = createFacetedSlab(0.11, 0.045, 0.86, 2, 1, 5, 0.018)
-  addPart(armPadGeo, [-0.55, 0.18, -0.01], [-0.03, 0, 0])
-  addPart(armPadGeo, [0.55, 0.18, -0.01], [-0.03, 0, 0])
+  // Left & Right Back Upright Stiles
+  const backStileGeo = new THREE.BoxGeometry(0.038, 0.44, 0.035)
+  addTransformed(timberParts, backStileGeo, [-0.31, 0.56, -0.27], [backRake, 0, 0])
+  addTransformed(timberParts, backStileGeo, [0.31, 0.56, -0.27], [backRake, 0, 0])
 
-  // Front vertical arm supports connecting apron to armpads
-  const armPostGeo = createFacetedSlab(0.05, 0.28, 0.05, 1, 2, 1, 0.010)
-  addPart(armPostGeo, [-0.53, 0.04, 0.36], [0.04, 0, 0])
-  addPart(armPostGeo, [0.53, 0.04, 0.36], [0.04, 0, 0])
+  // Sculptural Top Crest Rail (Top edge at y = 0.78m)
+  const crestRailGeo = new THREE.BoxGeometry(0.68, 0.045, 0.035)
+  addTransformed(timberParts, crestRailGeo, [0, 0.76, -0.32], [backRake, 0, 0])
 
-  // Merge all parts into one solid contiguous geometry
-  const merged = mergeGeometries(parts, false)
-  parts.forEach((p) => p.dispose())
+  // Mid-Lumbar Horizontal Timber Rail
+  const lumbarRailGeo = new THREE.BoxGeometry(0.60, 0.03, 0.025)
+  addTransformed(timberParts, lumbarRailGeo, [0, 0.48, -0.23], [backRake, 0, 0])
 
-  // Non-indexed so each triangle has distinct normals and vertex colors
-  const nonIndexed = merged.index ? merged.toNonIndexed() : merged
-  nonIndexed.computeVertexNormals()
-
-  // ==========================================
-  // STEP 3: Bake palette gradient across faceted surfaces
-  // Sand (#EFE6D8), Gold (#B8901F), Clay (#8B5E3C)
-  // Carefully calibrated lighting response so midtone facets shine with rich Egyptian gold,
-  // key-facing facets glow with luminous sand, and shaded facets catch warm terracotta clay.
-  // ==========================================
-  const keyLightDir = new THREE.Vector3(3.0, 4.5, 3.5).normalize()
-  const fillLightDir = new THREE.Vector3(-2.2, 1.5, 1.5).normalize()
-
-  const posAttr = nonIndexed.getAttribute('position')
-  const vertexCount = posAttr.count
-  const colors = new Float32Array(vertexCount * 3)
-  const thresholds = new Float32Array(vertexCount)
-
-  // Palette color stops
-  const cDeepClay    = new THREE.Color('#462614') // deep burnt clay / shadow
-  const cClay        = new THREE.Color('#8B5E3C') // warm terracotta clay
-  const cWarmAmber   = new THREE.Color('#A86F22') // rich amber ochre
-  const cDesertGold  = new THREE.Color('#B8901F') // iconic Egyptian gold
-  const cRadiantGold = new THREE.Color('#D8A426') // gleaming polished gold
-  const cWarmSand    = new THREE.Color('#EFE6D8') // warm luminous sand
-  const cHighlight   = new THREE.Color('#FAF5EC') // sparkling champagne highlight
-
-  const vA = new THREE.Vector3()
-  const vB = new THREE.Vector3()
-  const vC = new THREE.Vector3()
-  const e1 = new THREE.Vector3()
-  const e2 = new THREE.Vector3()
-  const faceNormal = new THREE.Vector3()
-  const facetColor = new THREE.Color()
-
-  const minY = -0.70
-  const heightSpan = 1.52
-
-  for (let i = 0; i < vertexCount; i += 3) {
-    vA.fromBufferAttribute(posAttr, i)
-    vB.fromBufferAttribute(posAttr, i + 1)
-    vC.fromBufferAttribute(posAttr, i + 2)
-
-    e1.subVectors(vB, vA)
-    e2.subVectors(vC, vA)
-    faceNormal.crossVectors(e1, e2).normalize()
-
-    // Key and fill lighting dot products
-    const keyDot = faceNormal.dot(keyLightDir)
-    const fillDot = faceNormal.dot(fillLightDir)
-
-    // Balanced lighting response: 0 to 1
-    const rawLight = keyDot * 0.54 + fillDot * 0.20 + 0.46
-    const t = THREE.MathUtils.clamp(rawLight, 0, 1)
-
-    // Jewel-like palette gradient across facets:
-    if (t < 0.24) {
-      facetColor.copy(cDeepClay).lerp(cClay, t / 0.24)
-    } else if (t < 0.45) {
-      facetColor.copy(cClay).lerp(cWarmAmber, (t - 0.24) / 0.21)
-    } else if (t < 0.68) {
-      facetColor.copy(cWarmAmber).lerp(cDesertGold, (t - 0.45) / 0.23)
-    } else if (t < 0.85) {
-      facetColor.copy(cDesertGold).lerp(cRadiantGold, (t - 0.68) / 0.17)
-    } else if (t < 0.94) {
-      facetColor.copy(cRadiantGold).lerp(cWarmSand, (t - 0.85) / 0.09)
-    } else {
-      facetColor.copy(cWarmSand).lerp(cHighlight, (t - 0.94) / 0.06)
-    }
-
-    // Centroid of this triangle face
-    const cy = (vA.y + vB.y + vC.y) / 3.0
-    const cx = (vA.x + vB.x + vC.x) / 3.0
-    const cz = (vA.z + vB.z + vC.z) / 3.0
-
-    // Deliberate bottom-to-top sequence with harmonic facet rhythm
-    const normY = THREE.MathUtils.clamp((cy - minY) / heightSpan, 0.0, 1.0)
-    const wave = (Math.sin(cx * 11.0) * Math.cos(cz * 11.0) + 1.0) * 0.04
-    const thresh = THREE.MathUtils.clamp(normY * 0.92 + wave, 0.0, 1.0)
-
-    // Assign uniform facet color and reveal threshold to all 3 vertices
-    for (let j = 0; j < 3; j++) {
-      colors[(i + j) * 3] = facetColor.r
-      colors[(i + j) * 3 + 1] = facetColor.g
-      colors[(i + j) * 3 + 2] = facetColor.b
-      thresholds[i + j] = thresh
+  // =========================================================================
+  // 5. ERGONOMIC PLUSH UPHOLSTERED CUSHIONS (Seat & Backrest)
+  // =========================================================================
+  // Deep Seat Cushion: 85mm thick luxury foam sitting securely from y = 0.38 to y = 0.465m
+  // Dimensions: 0.64m wide, 0.58m deep, ergonomic center dip.
+  const seatCushionGeo = new THREE.BoxGeometry(0.64, 0.085, 0.58, 4, 2, 4)
+  // Soften edges and subtle ergonomic dip
+  const seatPos = seatCushionGeo.getAttribute('position')
+  for (let i = 0; i < seatPos.count; i++) {
+    const x = seatPos.getX(i)
+    const y = seatPos.getY(i)
+    const z = seatPos.getZ(i)
+    // Subtle scoop towards center of seat
+    if (y > 0.02 && Math.abs(x) < 0.28 && Math.abs(z) < 0.24) {
+      const dip = (1 - (x / 0.28) ** 2) * (1 - (z / 0.24) ** 2) * 0.015
+      seatPos.setY(i, y - dip)
     }
   }
+  seatCushionGeo.computeVertexNormals()
+  addTransformed(cushionParts, seatCushionGeo, [0, 0.422, 0.02], [-0.05, 0, 0])
 
-  nonIndexed.setAttribute('color', new THREE.BufferAttribute(colors, 3))
-  nonIndexed.setAttribute('aThreshold', new THREE.BufferAttribute(thresholds, 1))
+  // Curved Backrest Cushion: 0.58m wide, 0.30m high, 0.075m thick, with gentle lumbar contour
+  const backCushionGeo = new THREE.BoxGeometry(0.58, 0.30, 0.075, 4, 3, 2)
+  const backPos = backCushionGeo.getAttribute('position')
+  for (let i = 0; i < backPos.count; i++) {
+    const x = backPos.getX(i)
+    const z = backPos.getZ(i)
+    // Curve gently backward along outer wings
+    if (Math.abs(x) > 0.1) {
+      const curve = (x / 0.29) ** 2 * 0.025
+      backPos.setZ(i, z - curve)
+    }
+  }
+  backCushionGeo.computeVertexNormals()
+  addTransformed(cushionParts, backCushionGeo, [0, 0.61, -0.24], [backRake, 0, 0])
 
-  // ==========================================
-  // STEP 4 & WIREFRAME: Translucent ink wireframe edges outlining the faceted geometry (#1C1712)
-  // Threshold 10 degrees traces crystalline facet boundaries without visual noise
-  // ==========================================
-  const edgeGeometry = new THREE.EdgesGeometry(nonIndexed, 10)
+  // Merge each subsystem into unified BufferGeometries (max 3 draw calls!)
+  const timberMerged = mergeGeometries(timberParts, false) || new THREE.BufferGeometry()
+  const cushionMerged = mergeGeometries(cushionParts, false) || new THREE.BufferGeometry()
+  const brassMerged = mergeGeometries(brassParts, false) || new THREE.BufferGeometry()
+
+  timberParts.forEach((p) => p.dispose())
+  cushionParts.forEach((p) => p.dispose())
+  brassParts.forEach((p) => p.dispose())
+
+  timberMerged.computeVertexNormals()
+  cushionMerged.computeVertexNormals()
+  brassMerged.computeVertexNormals()
+
+  // Fine architectural edges for inspect mode
+  const edgeGeometry = new THREE.EdgesGeometry(cushionMerged, 15)
+
+  // Millimeter bounding box (820mm W x 780mm H x 840mm D, grounded at y = 0.00 to 0.78m)
+  const boxGeo = new THREE.BoxGeometry(0.82, 0.78, 0.84)
+  const boundingBoxGeo = new THREE.EdgesGeometry(boxGeo)
 
   return {
-    meshGeometry: nonIndexed,
+    timberGeometry: timberMerged,
+    cushionGeometry: cushionMerged,
+    brassGeometry: brassMerged,
     edgeGeometry,
+    boundingBoxGeo,
   }
 }
 
 export default function ProceduralChair({
   targetRotationY,
-  targetRotationX,
-  targetX,
-  targetY,
-  targetScale,
+  targetRotationX = 0,
+  targetX = 0,
+  targetY = 0,
+  targetScale = 1.0,
   revealProgress = 1.0,
+  scrollProgress = 0,
   frozen = false,
+  hologramOpacity = 0,
 }: ProceduralChairProps) {
   const outerRef = useRef<THREE.Group>(null!)
+  const state = useSceneState()
+
+  // Mouse parallax tracking for subtle desktop life
+  const mouseTilt = useRef({ x: 0, y: 0 })
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const handleMouseMove = (e: MouseEvent) => {
+      // Normal range: -1 to 1
+      const nx = (e.clientX / window.innerWidth) * 2 - 1
+      const ny = (e.clientY / window.innerHeight) * 2 - 1
+      mouseTilt.current.y = nx * 0.08
+      mouseTilt.current.x = ny * 0.04
+    }
+    window.addEventListener('mousemove', handleMouseMove, { passive: true })
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [])
 
   const currentState = useRef({
     rotationY: targetRotationY,
@@ -362,71 +369,126 @@ export default function ProceduralChair({
     scale: targetScale,
   })
 
-  // Shader uniform controlling wireframe-to-solid progressive facet materialization
-  const revealUniform = useRef({ value: revealProgress })
+  const { oakTex, walnutTex, boucleTex, linenTex } = useMemo(createChairTextures, [])
 
-  const { meshGeometry, edgeGeometry } = useMemo(buildSolidChair, [])
+  const {
+    timberGeometry,
+    cushionGeometry,
+    brassGeometry,
+    edgeGeometry,
+    boundingBoxGeo,
+  } = useMemo(buildArchitecturalArmchair, [])
 
-  // Custom shader on MeshStandardMaterial that discards facets when uRevealProgress < vThreshold
-  // and flashes a shimmering champagne highlight as each facet freshly crystallizes
-  const chairMaterial = useMemo(() => {
-    const mat = new THREE.MeshStandardMaterial({
-      vertexColors: true,
+  // ==========================================
+  // PBR MATERIALS PIPELINE (Dynamic Swatches)
+  // ==========================================
+  // 1. Solid Timber Hardwood Material
+  const timberMaterial = useMemo(() => {
+    return new THREE.MeshStandardMaterial({
+      color: new THREE.Color('#D2A66C'),
+      map: oakTex || undefined,
       roughness: 0.35,
-      metalness: 0.24,
-      flatShading: true,
+      metalness: 0.04,
     })
+  }, [oakTex])
 
-    mat.customProgramCacheKey = () => 'wireframe_to_solid_chair'
-    mat.onBeforeCompile = (shader) => {
-      shader.uniforms.uRevealProgress = revealUniform.current
-      shader.vertexShader = `
-        attribute float aThreshold;
-        varying float vThreshold;
-      ` + shader.vertexShader
-      shader.vertexShader = shader.vertexShader.replace(
-        '#include <color_vertex>',
-        `#include <color_vertex>
-         vThreshold = aThreshold;`
-      )
-      shader.fragmentShader = `
-        uniform float uRevealProgress;
-        varying float vThreshold;
-      ` + shader.fragmentShader
-      shader.fragmentShader = shader.fragmentShader.replace(
-        '#include <color_fragment>',
-        `
-        float delta = uRevealProgress - vThreshold;
-        if (delta < 0.0) {
-          discard;
-        }
-        #include <color_fragment>
-        if (delta < 0.05) {
-          float flash = (1.0 - delta / 0.05) * 0.40;
-          diffuseColor.rgb = mix(diffuseColor.rgb, vec3(1.0, 0.96, 0.86), flash);
-        }
-        `
-      )
-    }
-    return mat
+  // 2. Plush Cushion Upholstery Material
+  const cushionMaterial = useMemo(() => {
+    return new THREE.MeshStandardMaterial({
+      color: new THREE.Color('#ECE4D8'),
+      map: linenTex || undefined,
+      roughness: 0.78,
+      metalness: 0.0,
+    })
+  }, [linenTex])
+
+  // 3. Polished Architectural Champagne Brass Material
+  const brassMaterial = useMemo(() => {
+    return new THREE.MeshStandardMaterial({
+      color: new THREE.Color('#D4B26F'),
+      roughness: 0.22,
+      metalness: 0.88,
+    })
   }, [])
 
-  // Translucent ink-toned wireframe mesh (#1C1712 at low opacity)
+  // 4. Hairline Wireframe Material (Inspect Mode)
   const edgeMaterial = useMemo(
     () =>
       new THREE.LineBasicMaterial({
-        color: new THREE.Color('#1C1712'),
+        color: new THREE.Color('#1C1917'),
         transparent: true,
-        opacity: 0.35,
+        opacity: 0.3,
       }),
-    [],
+    []
   )
+
+  // 5. Bounding Box Wireframe Material (Muted Architectural Bronze)
+  const boundingMaterial = useMemo(
+    () =>
+      new THREE.LineBasicMaterial({
+        color: new THREE.Color('#A4774B'),
+        transparent: true,
+        opacity: 0.65,
+      }),
+    []
+  )
+
+  // 6. Hologram Descent Pass Material (Vibrant Cyan-Gold Holographic Wireframe)
+  const hologramMaterial = useMemo(
+    () =>
+      new THREE.LineBasicMaterial({
+        color: new THREE.Color('#38BDF8'),
+        transparent: true,
+        opacity: 0.0,
+        depthWrite: false,
+      }),
+    []
+  )
+
+  // Live Material Swatch Switcher (Oak, Bouclé, Walnut)
+  useEffect(() => {
+    if (state.materialVariant === 'boucle') {
+      // Nordic Blonde Ash Frame + Textured Cream Bouclé Cushion
+      timberMaterial.color.set('#D8C8B5')
+      timberMaterial.map = oakTex || null
+      timberMaterial.roughness = 0.38
+      timberMaterial.needsUpdate = true
+
+      cushionMaterial.color.set('#FAF6F0')
+      cushionMaterial.map = boucleTex || null
+      cushionMaterial.roughness = 0.85
+      cushionMaterial.metalness = 0.0
+      cushionMaterial.needsUpdate = true
+    } else if (state.materialVariant === 'walnut') {
+      // Smoked Royal Walnut Frame + Espresso Wool Cushion
+      timberMaterial.color.set('#3A2518')
+      timberMaterial.map = walnutTex || null
+      timberMaterial.roughness = 0.28
+      timberMaterial.needsUpdate = true
+
+      cushionMaterial.color.set('#231D19')
+      cushionMaterial.map = linenTex || null
+      cushionMaterial.roughness = 0.72
+      cushionMaterial.metalness = 0.0
+      cushionMaterial.needsUpdate = true
+    } else {
+      // Natural Scandinavian White Oak + Oatmeal Belgian Linen
+      timberMaterial.color.set('#D2A66C')
+      timberMaterial.map = oakTex || null
+      timberMaterial.roughness = 0.35
+      timberMaterial.needsUpdate = true
+
+      cushionMaterial.color.set('#ECE4D8')
+      cushionMaterial.map = linenTex || null
+      cushionMaterial.roughness = 0.78
+      cushionMaterial.metalness = 0.0
+      cushionMaterial.needsUpdate = true
+    }
+  }, [state.materialVariant, timberMaterial, cushionMaterial, oakTex, walnutTex, boucleTex, linenTex])
 
   useFrame((_, rawDelta) => {
     if (!outerRef.current) return
     const delta = Math.min(rawDelta, 0.05)
-
-    const targetReveal = THREE.MathUtils.clamp(revealProgress, 0.0, 1.0)
 
     if (frozen) {
       currentState.current = {
@@ -436,40 +498,89 @@ export default function ProceduralChair({
         y: targetY,
         scale: targetScale,
       }
-      revealUniform.current.value = targetReveal
     } else {
-      const lerpFactor = 1 - Math.pow(0.01, delta)
+      const lerpFactor = 1 - Math.pow(0.001, delta)
       const s = currentState.current
-      s.rotationY += (targetRotationY - s.rotationY) * lerpFactor
-      s.rotationX += (targetRotationX - s.rotationX) * lerpFactor
-      s.x += (targetX - s.x) * lerpFactor
-      s.y += (targetY - s.y) * lerpFactor
-      s.scale += (targetScale - s.scale) * lerpFactor
 
-      // Smooth, responsive scrub of the reveal threshold
-      revealUniform.current.value += (targetReveal - revealUniform.current.value) * 0.25
+      if (!state.inspectMode) {
+        // Continuous smooth rotation driven by scroll + gentle mouse parallax
+        const finalTargetRotY = targetRotationY + mouseTilt.current.y
+        const finalTargetRotX = targetRotationX + mouseTilt.current.x
+
+        s.rotationY += (finalTargetRotY - s.rotationY) * lerpFactor
+        s.rotationX += (finalTargetRotX - s.rotationX) * lerpFactor
+        s.x += (targetX - s.x) * lerpFactor
+        s.y += (targetY - s.y) * lerpFactor
+        s.scale += (targetScale - s.scale) * lerpFactor
+      } else {
+        // In Inspect Mode: centered and scaled for inspection
+        s.x += (0 - s.x) * lerpFactor
+        s.y += (0 - s.y) * lerpFactor
+        s.scale += (1.25 - s.scale) * lerpFactor
+      }
     }
 
     const s = currentState.current
-    outerRef.current.rotation.y = s.rotationY
-    outerRef.current.rotation.x = s.rotationX
+    if (!state.inspectMode) {
+      outerRef.current.rotation.y = s.rotationY
+      outerRef.current.rotation.x = s.rotationX
+    }
     outerRef.current.position.x = s.x
     outerRef.current.position.y = s.y
     outerRef.current.scale.setScalar(s.scale)
+
+    // Hologram wireframe shines while descending through the air
+    const worldY = outerRef.current.parent?.position.y ?? outerRef.current.position.y
+    if (worldY > 0.05) {
+      hologramMaterial.opacity = Math.min(0.85, (worldY / 1.5))
+    } else {
+      hologramMaterial.opacity = 0.0
+    }
   })
+
+  const showBounding =
+    state.activeEngine === 'SYS.05' || state.processStep === 3 || state.inspectMode
 
   return (
     <group ref={outerRef}>
-      {/* 1. Translucent ink wireframe skeleton outlining the faceted geometry (#1C1712) */}
-      <lineSegments geometry={edgeGeometry} material={edgeMaterial} />
-
-      {/* 2. Solid shaded facets progressively filling in face-by-face via shader */}
+      {/* 1. Solid Turned Hardwood Timber Frame */}
       <mesh
-        geometry={meshGeometry}
-        material={chairMaterial}
+        geometry={timberGeometry}
+        material={timberMaterial}
         castShadow
         receiveShadow
       />
+
+      {/* 2. Plush Ergonomic Upholstered Cushions (Seat & Backrest) */}
+      <mesh
+        geometry={cushionGeometry}
+        material={cushionMaterial}
+        castShadow
+        receiveShadow
+      />
+
+      {/* 3. Polished Architectural Champagne Brass Ferrules & Hardware */}
+      <mesh
+        geometry={brassGeometry}
+        material={brassMaterial}
+        castShadow
+        receiveShadow
+      />
+
+      {/* 4. Translucent Wireframe Outlining Cushions in Inspect Mode */}
+      {state.inspectMode && (
+        <lineSegments geometry={edgeGeometry} material={edgeMaterial} />
+      )}
+
+      {/* Hologram Stage Wireframe Pass while descending */}
+      <lineSegments geometry={edgeGeometry} material={hologramMaterial} />
+
+      {/* 5. Millimeter Dimension Bounding Box Wireframe (Centered at y = 0.39m) */}
+      {showBounding && (
+        <group position={[0, 0.39, 0]}>
+          <lineSegments geometry={boundingBoxGeo} material={boundingMaterial} />
+        </group>
+      )}
     </group>
   )
 }
