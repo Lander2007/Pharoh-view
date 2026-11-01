@@ -40,7 +40,6 @@ export default function Footer() {
                 />
               </div>
               <p className="font-serif font-bold text-xl text-[#F5EEE6] tracking-widest rtl:tracking-normal">PHAROVIEW</p>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#4CC9F0]" />
             </div>
             <p className="font-sans text-sm text-[#F5EEE6]/80 leading-relaxed mb-1">
               {t.footer.tagline}
