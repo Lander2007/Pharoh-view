@@ -1,9 +1,18 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { soundEngine } from '@/lib/soundEngine'
 import { useLanguage } from '@/lib/i18n'
+
+gsap.registerPlugin(ScrollTrigger)
+
+interface NavItem {
+  id: string
+  label: string
+}
 
 export default function Nav({ isVisible = true }: { isVisible?: boolean }) {
   const { t, lang, toggleLanguage, isRTL } = useLanguage()
@@ -12,7 +21,12 @@ export default function Nav({ isVisible = true }: { isVisible?: boolean }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const isScrollingRef = useRef(false)
 
-  const navItems = [
+  const navContainerRef = useRef<HTMLDivElement>(null)
+  const hoverPillRef = useRef<HTMLDivElement>(null)
+  const activeIndicatorRef = useRef<HTMLDivElement>(null)
+  const linksMapRef = useRef<Map<string, HTMLAnchorElement>>(new Map())
+
+  const navItems: NavItem[] = [
     { id: 'problem', label: t.nav.problem },
     { id: 'features', label: t.nav.features },
     { id: 'how-it-works', label: t.nav.process },
@@ -20,35 +34,151 @@ export default function Nav({ isVisible = true }: { isVisible?: boolean }) {
     { id: 'future-plan', label: isRTL ? 'خارطة المستقبل' : 'ROADMAP' },
   ]
 
-  const sectionsToTrack = [
-    { id: 'hero' },
-    ...navItems,
-  ]
-
+  // Update sound state from engine
   useEffect(() => {
     setIsMuted(soundEngine.isMuted())
+  }, [])
 
-    const handleScroll = () => {
-      if (isScrollingRef.current) return
+  // 1. SCROLL-SYNCED ACTIVE INDICATOR USING GSAP SCROLLTRIGGER
+  useEffect(() => {
+    if (typeof window === 'undefined') return
 
-      const scrollPos = window.scrollY + 220
+    const triggers: ScrollTrigger[] = []
 
-      for (let i = sectionsToTrack.length - 1; i >= 0; i--) {
-        const el = document.getElementById(sectionsToTrack[i].id)
-        if (el) {
-          const top = el.offsetTop
-          if (scrollPos >= top) {
-            setActiveSection(sectionsToTrack[i].id)
-            break
-          }
-        }
+    const sections = [
+      { id: 'hero', selector: '#hero' },
+      { id: 'problem', selector: '#problem' },
+      { id: 'features', selector: '#features' },
+      { id: 'how-it-works', selector: '#how-it-works' },
+      { id: 'sdgs', selector: '#sdgs' },
+      { id: 'future-plan', selector: '#future-plan' },
+    ]
+
+    // Create ScrollTrigger watchers for precise viewport section detection
+    sections.forEach(({ id, selector }) => {
+      const el = document.querySelector(selector)
+      if (el) {
+        const trigger = ScrollTrigger.create({
+          trigger: el,
+          start: 'top 45%',
+          end: 'bottom 45%',
+          onEnter: () => {
+            if (!isScrollingRef.current) setActiveSection(id)
+          },
+          onEnterBack: () => {
+            if (!isScrollingRef.current) setActiveSection(id)
+          },
+        })
+        triggers.push(trigger)
       }
-    }
+    })
 
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    handleScroll()
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [sectionsToTrack])
+    return () => {
+      triggers.forEach((tr) => tr.kill())
+    }
+  }, [lang, isRTL])
+
+  // Morph active indicator underline to match activeSection
+  const updateActiveIndicator = useCallback(
+    (sectionId: string, immediate = false) => {
+      const linkEl = linksMapRef.current.get(sectionId)
+      const indicator = activeIndicatorRef.current
+      if (!indicator) return
+
+      if (linkEl && sectionId !== 'hero') {
+        const targetX = linkEl.offsetLeft
+        const targetWidth = linkEl.offsetWidth
+
+        gsap.to(indicator, {
+          x: targetX,
+          width: targetWidth,
+          opacity: 1,
+          duration: immediate ? 0 : 0.45,
+          ease: 'power3.out',
+          overwrite: 'auto',
+        })
+      } else {
+        // Hero section or unlinked: hide active underline smoothly
+        gsap.to(indicator, {
+          opacity: 0,
+          duration: immediate ? 0 : 0.3,
+          overwrite: 'auto',
+        })
+      }
+    },
+    []
+  )
+
+  useEffect(() => {
+    updateActiveIndicator(activeSection)
+  }, [activeSection, updateActiveIndicator, lang, isRTL])
+
+  // Reposition on window resize
+  useEffect(() => {
+    const handleResize = () => updateActiveIndicator(activeSection, true)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [activeSection, updateActiveIndicator])
+
+  // 2. MAGNETIC HOVER PHYSICS FOR LINKS
+  const handleLinkMouseMove = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    const el = e.currentTarget
+    const rect = el.getBoundingClientRect()
+    const relX = e.clientX - (rect.left + rect.width / 2)
+    const relY = e.clientY - (rect.top + rect.height / 2)
+
+    gsap.to(el, {
+      x: relX * 0.35,
+      y: relY * 0.35,
+      scale: 1.05,
+      duration: 0.3,
+      ease: 'power2.out',
+      overwrite: 'auto',
+    })
+  }
+
+  const handleLinkMouseEnter = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    soundEngine.playHoverTick()
+    const el = e.currentTarget
+
+    // Animate fluid glassmorphic hover pill behind the hovered link
+    if (hoverPillRef.current) {
+      gsap.to(hoverPillRef.current, {
+        x: el.offsetLeft,
+        width: el.offsetWidth,
+        opacity: 1,
+        duration: 0.35,
+        ease: 'power3.out',
+        overwrite: 'auto',
+      })
+    }
+  }
+
+  const handleLinkMouseLeave = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    const el = e.currentTarget
+
+    // Snap back link with rubber-band elastic physics
+    gsap.to(el, {
+      x: 0,
+      y: 0,
+      scale: 1.0,
+      duration: 0.65,
+      ease: 'elastic.out(1, 0.3)',
+      overwrite: 'auto',
+    })
+  }
+
+  // When mouse leaves the entire nav capsule, fade out hover pill
+  const handleNavMouseLeave = () => {
+    if (hoverPillRef.current) {
+      gsap.to(hoverPillRef.current, {
+        opacity: 0,
+        duration: 0.25,
+        ease: 'power2.out',
+        overwrite: 'auto',
+      })
+    }
+  }
 
   const toggleSound = () => {
     const nextMuted = soundEngine.toggleMute()
@@ -120,34 +250,63 @@ export default function Nav({ isVisible = true }: { isVisible?: boolean }) {
           </div>
         </Link>
 
-        {/* Center: 5 Clean Monospace Navigation Links (Desktop) */}
-        <nav className="hidden lg:flex items-center gap-[2.5rem]">
-          {navItems.map((item) => {
-            const isActive = activeSection === item.id
-            return (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                onClick={(e) => {
-                  e.preventDefault()
-                  scrollToSection(item.id)
-                }}
-                className={`relative py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] transition-colors duration-200 cursor-pointer ${
-                  isActive
-                    ? 'text-[#1C1917]'
-                    : 'text-[#1C1917]/65 hover:text-[#1C1917]'
-                }`}
-              >
-                <span>{item.label}</span>
-                {/* Sharp 1.5px Solid Underline on Active Item */}
-                <span
-                  className={`absolute -bottom-1 left-0 right-0 h-[1.5px] bg-[#1C1917] transition-all duration-200 ${
-                    isActive ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
+        {/* Center: 3. Glassmorphic Navigation Island with Magnetic Links */}
+        <nav
+          ref={navContainerRef}
+          onMouseLeave={handleNavMouseLeave}
+          className="relative hidden lg:flex items-center p-[4px_6px] rounded-[2px] border border-[#1C1917]/12 shadow-[0_2px_8px_rgba(28,25,23,0.02)]"
+          style={{
+            background: 'rgba(245, 238, 230, 0.65)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+          }}
+        >
+          {/* Fluid Glassmorphic Hover Pill (Spring physics behind hovered link) */}
+          <div
+            ref={hoverPillRef}
+            className="absolute top-[4px] bottom-[4px] rounded-[2px] bg-[#1C1917]/[0.06] border border-[#1C1917]/10 pointer-events-none opacity-0"
+            style={{ width: 0, left: 0 }}
+          />
+
+          {/* Active Section Underline Indicator (Morphs width & position to active section) */}
+          <div
+            ref={activeIndicatorRef}
+            className="absolute bottom-[2px] h-[2px] bg-[#1C1917] rounded-none pointer-events-none opacity-0"
+            style={{ width: 0, left: 0 }}
+          />
+
+          {/* Magnetic Navigation Links */}
+          <div className="relative z-10 flex items-center gap-1">
+            {navItems.map((item) => {
+              const isActive = activeSection === item.id
+              return (
+                <a
+                  key={item.id}
+                  ref={(el) => {
+                    if (el) linksMapRef.current.set(item.id, el)
+                    else linksMapRef.current.delete(item.id)
+                  }}
+                  href={`#${item.id}`}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    scrollToSection(item.id)
+                  }}
+                  onMouseMove={(e) => handleLinkMouseMove(e, item.id)}
+                  onMouseEnter={(e) => handleLinkMouseEnter(e, item.id)}
+                  onMouseLeave={(e) => handleLinkMouseLeave(e, item.id)}
+                  className={`relative px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] transition-colors duration-200 cursor-pointer select-none inline-block ${
+                    isActive
+                      ? 'text-[#1C1917]'
+                      : 'text-[#1C1917]/65 hover:text-[#8C6239]'
                   }`}
-                />
-              </a>
-            )
-          })}
+                >
+                  <span className="relative z-10 block pointer-events-none">
+                    {item.label}
+                  </span>
+                </a>
+              )
+            })}
+          </div>
         </nav>
 
         {/* Right: Unified Sharp-Bordered Control Group (h: 38px) */}
