@@ -26,6 +26,9 @@ export default function Home() {
   const [isPreloaded, setIsPreloaded] = useState(false)
 
   useEffect(() => {
+    // Guaranteed fallback: Reveal Navbar smoothly after 1.2s
+    const timer = setTimeout(() => setIsPreloaded(true), 1200)
+
     if (typeof window !== 'undefined') {
       const sp = new URLSearchParams(window.location.search)
       const sec = sp.get('section')
@@ -39,6 +42,8 @@ export default function Home() {
         setTimeout(scrollToSec, 200)
       }
     }
+
+    return () => clearTimeout(timer)
   }, [])
 
   return (

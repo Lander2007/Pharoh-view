@@ -53,7 +53,7 @@ export default function PageWipePreloader({ onComplete }: { onComplete?: () => v
       // Trigger GSAP architectural curtain wipe safely scoped to containerRef
       ctx = gsap.context(() => {
         const tl = gsap.timeline({
-          delay: 0.1,
+          delay: 0.05,
           onComplete: () => {
             setIsFinished(true)
             onCompleteRef.current?.()
@@ -63,39 +63,39 @@ export default function PageWipePreloader({ onComplete }: { onComplete?: () => v
         tl.to('.preloader-content', {
           opacity: 0,
           y: -24,
-          duration: 0.35,
+          duration: 0.25,
           ease: 'power2.in',
         })
           .to(
             '.preloader-curtain',
             {
               clipPath: 'inset(0 0 100% 0)',
-              duration: 0.85,
-              stagger: 0.1,
+              duration: 0.65,
+              stagger: 0.08,
               ease: 'power4.inOut',
             },
-            '-=0.1'
+            '-=0.05'
           )
           .to(
             containerRef.current,
             {
               opacity: 0,
-              duration: 0.2,
+              duration: 0.15,
             },
-            '-=0.2'
+            '-=0.15'
           )
       }, containerRef)
     }
 
     finishRef.current = finish
 
-    // Safety fallback: guaranteed curtain open after 1.4s maximum
+    // Safety fallback: guaranteed curtain open after 1.1s maximum
     const safetyTimer = setTimeout(() => {
       finish()
-    }, 1400)
+    }, 1100)
 
     const interval = setInterval(() => {
-      val += Math.floor(Math.random() * 8) + 6
+      val += Math.floor(Math.random() * 10) + 8
       if (val >= 100) {
         finish()
       } else {
@@ -109,7 +109,7 @@ export default function PageWipePreloader({ onComplete }: { onComplete?: () => v
           if (text) setStatusText(text)
         }
       }
-    }, 25)
+    }, 20)
 
     return () => {
       clearInterval(interval)
@@ -123,9 +123,9 @@ export default function PageWipePreloader({ onComplete }: { onComplete?: () => v
       ref={containerRef}
       onClick={() => finishRef.current()}
       className={`fixed inset-0 z-[99999] flex items-center justify-center overflow-hidden transition-opacity duration-300 cursor-pointer ${
-        isFinished ? 'pointer-events-none opacity-0 invisible hidden' : 'pointer-events-auto bg-[#0D0C0B]'
+        isFinished ? 'pointer-events-none opacity-0 invisible hidden' : 'pointer-events-auto'
       }`}
-      style={isFinished ? { display: 'none', pointerEvents: 'none' } : { zIndex: 99999, backgroundColor: '#0D0C0B' }}
+      style={isFinished ? { display: 'none', pointerEvents: 'none' } : { zIndex: 99999 }}
       aria-hidden={isFinished}
       aria-label="Preloader"
     >
