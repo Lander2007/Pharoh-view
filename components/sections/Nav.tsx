@@ -1,38 +1,40 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { soundEngine } from '@/lib/soundEngine'
 import { useLanguage } from '@/lib/i18n'
 
 export default function Nav() {
   const { t, lang, toggleLanguage, isRTL } = useLanguage()
-  const [activeSection, setActiveSection] = useState('hero')
+  const [activeStationIndex, setActiveStationIndex] = useState(0)
   const [isMuted, setIsMuted] = useState(false)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [hoveredStation, setHoveredStation] = useState<number | null>(null)
+  const isScrollingRef = useRef(false)
 
-  const navItems = [
-    { id: 'problem', label: t.nav.problem },
-    { id: 'features', label: t.nav.features },
-    { id: 'how-it-works', label: t.nav.process },
-    { id: 'sdgs', label: t.nav.impact },
-    { id: 'future-plan', label: isRTL ? 'خارطة المستقبل' : 'ROADMAP' },
+  const stations = [
+    { id: 'hero', num: '01', label: isRTL ? 'الفضاء المعماري' : 'HERO' },
+    { id: 'problem', num: '02', label: t.nav.problem },
+    { id: 'features', num: '03', label: t.nav.features },
+    { id: 'how-it-works', num: '04', label: t.nav.process },
+    { id: 'sdgs', num: '05', label: t.nav.impact },
+    { id: 'future-plan', num: '06', label: isRTL ? 'خارطة المستقبل' : 'ROADMAP' },
   ]
 
   useEffect(() => {
     setIsMuted(soundEngine.isMuted())
 
     const handleScroll = () => {
-      const sections = ['hero', 'problem', 'features', 'how-it-works', 'value', 'sdgs', 'future-plan', 'cta']
-      const scrollPos = window.scrollY + 220
+      if (isScrollingRef.current) return
 
-      for (const sec of sections) {
-        const el = document.getElementById(sec)
+      const scrollPos = window.scrollY + window.innerHeight * 0.35
+
+      for (let i = stations.length - 1; i >= 0; i--) {
+        const el = document.getElementById(stations[i].id)
         if (el) {
           const top = el.offsetTop
-          const height = el.offsetHeight
-          if (scrollPos >= top && scrollPos < top + height) {
-            setActiveSection(sec)
+          if (scrollPos >= top) {
+            setActiveStationIndex(i)
             break
           }
         }
@@ -42,72 +44,76 @@ export default function Nav() {
     window.addEventListener('scroll', handleScroll, { passive: true })
     handleScroll()
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  }, [stations])
 
   const toggleSound = () => {
     const nextMuted = soundEngine.toggleMute()
     setIsMuted(nextMuted)
   }
 
+  const scrollToStation = (id: string, index: number) => {
+    soundEngine.playClickTick()
+    setActiveStationIndex(index)
+    isScrollingRef.current = true
+
+    const el = document.getElementById(id)
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+
+    setTimeout(() => {
+      isScrollingRef.current = false
+    }, 850)
+  }
+
   return (
     <>
-      {/* Floating Luxury Architectural Glass Dock (z-[100]) */}
-      <header className="fixed top-4 sm:top-5 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-2rem)] sm:w-[calc(100%-3.5rem)] max-w-7xl h-[62px] sm:h-[66px] rounded-full bg-[#FAF6EE]/85 backdrop-blur-2xl border border-[#1C1917]/10 shadow-[0_12px_36px_rgba(28,25,23,0.08),0_1px_3px_rgba(28,25,23,0.04)] px-4 sm:px-6 flex items-center justify-between select-none transition-all duration-300">
-        {/* Left: Brand Lockup with Eye of Horus & Live Status Indicator */}
+      {/* =========================================================================
+          1. TOP-LEFT CORNER HUD: Architectural Brand Lockup (Zero Pill Wrapper!)
+      ========================================================================= */}
+      <div className="fixed top-6 sm:top-7 left-[3.5vw] rtl:left-auto rtl:right-[3.5vw] z-[100] select-none pointer-events-auto">
         <Link
           href="/"
-          onClick={() => soundEngine.playClickTick()}
-          className="flex items-center gap-3 group cursor-pointer shrink-0"
+          onClick={() => {
+            soundEngine.playClickTick()
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+          }}
+          className="flex items-center gap-3.5 group cursor-pointer"
         >
-          {/* Logo Badge */}
-          <div className="w-8 h-8 rounded-full bg-[#1C1917] p-1 border border-[#8C6239]/40 shadow-sm flex items-center justify-center shrink-0 group-hover:border-[#8C6239] transition-colors">
+          {/* Sharp 36px x 36px Obsidian Badge (border-radius: 2px) */}
+          <div className="w-9 h-9 rounded-[2px] bg-[#1C1917] p-1 border border-[#C89D54]/40 shadow-sm flex items-center justify-center shrink-0 group-hover:border-[#C89D54] transition-colors">
             <img
               src="/logo nice canva.jpg"
               alt="PHAROVIEW Eye of Horus"
-              className="w-full h-full object-contain rounded-full"
+              className="w-full h-full object-contain"
             />
           </div>
 
-          <span className="font-serif font-bold text-[16px] sm:text-[18px] tracking-[0.16em] text-[#1C1917] uppercase">
-            {t.nav.brand}
-          </span>
+          {/* Brand Typography + Telemetry */}
+          <div className="flex flex-col text-left rtl:text-right">
+            <span className="font-serif font-bold text-[14px] sm:text-[15px] tracking-[0.16em] text-[#1C1917] uppercase leading-none">
+              {t.nav.brand}
+            </span>
+            <span className="font-mono text-[9px] tracking-[0.22em] text-[#8C6239] font-medium uppercase mt-1 leading-none">
+              {isRTL ? 'محرك الواقع المعزز // إصدار ٢.٦' : 'AR_ENGINE // V2.6'}
+            </span>
+          </div>
         </Link>
+      </div>
 
-        {/* Center: Interactive Architectural Floating Pills (Desktop) */}
-        <nav className="hidden lg:flex items-center gap-1.5 p-1 rounded-full bg-[#1C1917]/[0.03] border border-[#1C1917]/[0.06]">
-          {navItems.map((item) => {
-            const isActive = activeSection === item.id || (item.id === 'sdgs' && activeSection === 'value')
-            return (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                onClick={() => soundEngine.playClickTick()}
-                onMouseEnter={() => soundEngine.playHoverTick()}
-                className={`relative px-4 py-1.5 rounded-full font-mono text-[11px] font-semibold tracking-[0.16em] uppercase transition-all duration-200 cursor-pointer ${
-                  isActive
-                    ? 'bg-[#1C1917] text-[#FAF6EE] shadow-sm'
-                    : 'text-[#1C1917]/70 hover:text-[#1C1917] hover:bg-[#1C1917]/[0.06]'
-                }`}
-              >
-                <span className="relative z-10">{item.label}</span>
-              </a>
-            )
-          })}
-        </nav>
-
-        {/* Right: Sound Equalizer, Language Switcher & High-Contrast CTA */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Animated Audio Equalizer Pill */}
+      {/* =========================================================================
+          2. TOP-RIGHT CORNER HUD: Sharp-Edged Architectural Control Group
+             (border-radius: 0px, border: 1px solid rgba(28,25,23,0.18), height: 40px)
+      ========================================================================= */}
+      <div className="fixed top-6 sm:top-7 right-[3.5vw] rtl:right-auto rtl:left-[3.5vw] z-[100] select-none pointer-events-auto">
+        <div className="flex items-stretch h-[40px] border border-[#1C1917]/20 bg-[#FAF6EE]/85 backdrop-blur-md shadow-[0_4px_20px_rgba(28,25,23,0.06)] rounded-none overflow-hidden">
+          {/* Cell 1: Sound Toggle with Animated 4-Bar Equalizer */}
           <button
             type="button"
             onClick={toggleSound}
             aria-label={isMuted ? t.common.soundOff : t.common.soundOn}
             title={isMuted ? t.common.soundOff : t.common.soundOn}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-200 cursor-pointer text-[11px] font-mono ${
-              isMuted
-                ? 'border-[#1C1917]/15 bg-white/40 text-[#6E655F] hover:bg-white/80'
-                : 'border-[#8C6239]/40 bg-[#8C6239]/10 text-[#8C6239] hover:bg-[#8C6239]/20 shadow-sm'
-            }`}
+            className="px-3.5 flex items-center justify-center border-r rtl:border-r-0 rtl:border-l border-[#1C1917]/15 hover:bg-[#1C1917]/5 text-[#1C1917] transition-colors cursor-pointer"
           >
             {isMuted ? (
               <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-none stroke-current" strokeWidth="2">
@@ -116,99 +122,150 @@ export default function Nav() {
                 <path d="M17 16.95A7 7 0 0 1 5 12v-2" />
               </svg>
             ) : (
-              <span className="flex items-end gap-[2.5px] h-3">
+              <div className="flex items-end gap-[2px] h-3.5">
                 <span className="w-[2px] h-2 bg-[#8C6239] animate-pulse" />
-                <span className="w-[2px] h-3 bg-[#8C6239] animate-pulse delay-75" />
-                <span className="w-[2px] h-1.5 bg-[#8C6239] animate-pulse delay-150" />
-              </span>
+                <span className="w-[2px] h-3.5 bg-[#8C6239] animate-pulse delay-75" />
+                <span className="w-[2px] h-2.5 bg-[#8C6239] animate-pulse delay-150" />
+                <span className="w-[2px] h-3 bg-[#8C6239] animate-pulse delay-100" />
+              </div>
             )}
-            <span className="text-[10px] font-bold uppercase hidden md:inline">
-              {isMuted ? 'MUTE' : 'AUDIO'}
-            </span>
           </button>
 
-          {/* Minimal Language Switcher Pill */}
+          {/* Cell 2: Language Switcher Cell */}
           <button
             type="button"
             onClick={() => {
               soundEngine.playClickTick()
               toggleLanguage()
             }}
-            className="px-3.5 py-1.5 rounded-full border border-[#1C1917]/15 bg-white/50 hover:bg-[#1C1917] hover:text-[#FAF6EE] font-mono text-[11px] font-bold text-[#1C1917] transition-all duration-200 cursor-pointer shadow-sm tracking-wider uppercase"
             title={lang === 'en' ? 'التحويل إلى العربية' : 'Switch to English'}
+            className="px-3.5 flex items-center justify-center font-mono text-[11px] font-bold text-[#1C1917] hover:text-[#8C6239] hover:bg-[#1C1917]/5 border-r rtl:border-r-0 rtl:border-l border-[#1C1917]/15 transition-colors cursor-pointer uppercase tracking-wider"
           >
             {lang === 'en' ? 'عربي' : 'EN'}
           </button>
 
-          {/* High-End Architectural Primary CTA */}
+          {/* Cell 3: Primary CTA Cell (GET APP ↗ with Micro-Translating Vector Arrow) */}
           <a
             href="#cta"
             onClick={() => soundEngine.playClickTick()}
-            className="relative group overflow-hidden bg-[#1C1917] hover:bg-[#8C6239] text-[#FAF6EE] px-4 sm:px-5 py-2 rounded-full font-mono text-[11px] font-bold uppercase tracking-wider transition-all duration-300 shadow-sm inline-flex items-center gap-1.5 cursor-pointer shrink-0"
+            className="group flex items-center gap-2 bg-[#1C1917] hover:bg-[#8C6239] text-[#F5EEE6] px-5 h-full font-mono text-[11px] font-bold tracking-[0.14em] uppercase transition-colors duration-200 cursor-pointer"
           >
             <span>{t.nav.getApp}</span>
-            <span className="inline-block transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-              &nearr;
-            </span>
-          </a>
-
-          {/* Mobile Hamburger Toggle (< lg) */}
-          <button
-            type="button"
-            onClick={() => {
-              soundEngine.playClickTick()
-              setMobileMenuOpen(!mobileMenuOpen)
-            }}
-            aria-label="Toggle Navigation Menu"
-            className="lg:hidden p-2 rounded-full border border-[#1C1917]/15 bg-white/50 text-[#1C1917] hover:bg-[#1C1917]/5 transition-colors cursor-pointer"
-          >
-            <svg viewBox="0 0 24 24" className="w-4 h-4 fill-none stroke-current" strokeWidth="2">
-              {mobileMenuOpen ? (
-                <path d="M18 6L6 18M6 6l12 12" />
-              ) : (
-                <path d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
-        </div>
-      </header>
-
-      {/* Mobile Slide-Down Drawer */}
-      {mobileMenuOpen && (
-        <div className="fixed top-20 left-4 right-4 z-[99] rounded-2xl bg-[#FAF6EE]/95 backdrop-blur-2xl border border-[#1C1917]/15 shadow-2xl p-6 lg:hidden flex flex-col gap-4">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-[#8C6239] font-bold border-b border-[#1C1917]/10 pb-2">
-            NAVIGATION
-          </p>
-          <div className="flex flex-col gap-2">
-            {navItems.map((item) => (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                onClick={() => {
-                  soundEngine.playClickTick()
-                  setMobileMenuOpen(false)
-                }}
-                className="py-2.5 px-3 rounded-lg font-mono text-xs font-semibold text-[#1C1917] hover:bg-[#1C1917]/5 transition-colors"
-              >
-                {item.label}
-              </a>
-            ))}
-          </div>
-          <div className="pt-2 border-t border-[#1C1917]/10 flex items-center justify-between">
-            <span className="font-mono text-[10px] text-[#6E655F]">PHAROVIEW SPATIAL AR</span>
-            <a
-              href="#cta"
-              onClick={() => {
-                soundEngine.playClickTick()
-                setMobileMenuOpen(false)
-              }}
-              className="bg-[#1C1917] text-[#FAF6EE] px-4 py-2 rounded-full font-mono text-xs font-bold uppercase"
+            <svg
+              viewBox="0 0 12 12"
+              className="w-3 h-3 fill-none stroke-current stroke-[1.8] transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
             >
-              {t.nav.getApp} &nearr;
-            </a>
+              <path d="M2.5 9.5L9.5 2.5M9.5 2.5H4M9.5 2.5V8" />
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      {/* =========================================================================
+          3. SIGNATURE NAVIGATION: Interactive Vertical Blueprint Ruler
+             (fixed along edge, synced to ScrollTrigger progress)
+      ========================================================================= */}
+      <nav
+        aria-label="Blueprint Section Ruler"
+        className="fixed top-1/2 -translate-y-1/2 right-[2vw] rtl:right-auto rtl:left-[2vw] z-[95] select-none pointer-events-auto hidden sm:flex flex-col items-center"
+      >
+        {/* Continuous Scale Column */}
+        <div className="relative flex flex-col items-center">
+          {/* Continuous Architectural Vertical 1px Scale Line */}
+          <div className="absolute top-2 bottom-2 w-px bg-[#1C1917]/18 pointer-events-none" />
+
+          {/* Active Sliding Caliper Bracket Highlight */}
+          <div
+            className="absolute -left-6 rtl:-left-auto rtl:-right-6 w-12 pointer-events-none transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+            style={{
+              transform: `translateY(${activeStationIndex * 48}px)`,
+            }}
+          >
+            <div className="flex items-center justify-center font-mono text-[10px] font-bold text-[#8C6239] tracking-widest drop-shadow-[0_0_8px_rgba(200,157,84,0.4)]">
+              <span>[</span>
+              <span className="mx-0.5">{stations[activeStationIndex].num}</span>
+              <span>]</span>
+            </div>
+          </div>
+
+          {/* Station Nodes */}
+          <div className="flex flex-col gap-0 relative z-10">
+            {stations.map((st, idx) => {
+              const isActive = activeStationIndex === idx
+              const isHovered = hoveredStation === idx
+
+              return (
+                <div
+                  key={st.id}
+                  className="relative flex items-center justify-center h-[48px] w-[34px]"
+                  onMouseEnter={() => {
+                    setHoveredStation(idx)
+                    soundEngine.playHoverTick()
+                  }}
+                  onMouseLeave={() => setHoveredStation(null)}
+                >
+                  {/* Intermediate Millimeter Measurement Ticks (Subtle Architectural Caliper) */}
+                  <div className="absolute top-0 w-2 h-px bg-[#1C1917]/20 pointer-events-none" />
+                  <div className="absolute top-[16px] w-1.5 h-px bg-[#1C1917]/12 pointer-events-none" />
+                  <div className="absolute top-[32px] w-1.5 h-px bg-[#1C1917]/12 pointer-events-none" />
+
+                  {/* Main Station Trigger Button */}
+                  <button
+                    type="button"
+                    onClick={() => scrollToStation(st.id, idx)}
+                    className="relative flex items-center justify-center w-full h-full cursor-pointer group"
+                    title={st.label}
+                  >
+                    {/* Tick Mark Node */}
+                    <span
+                      className={`h-[2px] transition-all duration-300 ${
+                        isActive
+                          ? 'w-5 bg-[#8C6239]'
+                          : isHovered
+                          ? 'w-4 bg-[#1C1917]'
+                          : 'w-2.5 bg-[#1C1917]/40 group-hover:w-3.5 group-hover:bg-[#1C1917]'
+                      }`}
+                    />
+
+                    {/* Monospace Index Number */}
+                    <span
+                      className={`absolute right-6 rtl:right-auto rtl:left-6 font-mono text-[9px] font-bold transition-all duration-300 ${
+                        isActive
+                          ? 'text-[#8C6239] opacity-100 scale-105'
+                          : isHovered
+                          ? 'text-[#1C1917] opacity-80'
+                          : 'text-[#6E655F] opacity-35 group-hover:opacity-80'
+                      }`}
+                    >
+                      {st.num}
+                    </span>
+                  </button>
+
+                  {/* Frosted Architectural Slide-Out Label Card (Hover & Active) */}
+                  <div
+                    className={`absolute pointer-events-none transition-all duration-300 z-20 ${
+                      isRTL
+                        ? 'left-10 origin-left'
+                        : 'right-10 origin-right'
+                    } ${
+                      isHovered || (isActive && hoveredStation === null)
+                        ? 'opacity-100 translate-x-0 scale-100'
+                        : 'opacity-0 translate-x-2 rtl:-translate-x-2 scale-95'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 px-3 py-1 bg-[#FAF6EE]/92 backdrop-blur-md border border-[#1C1917]/15 shadow-[0_4px_16px_rgba(28,25,23,0.08)] whitespace-nowrap">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#8C6239]" />
+                      <span className="font-mono text-[10px] font-bold tracking-[0.16em] uppercase text-[#1C1917]">
+                        {st.label}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </div>
-      )}
+      </nav>
     </>
   )
 }
