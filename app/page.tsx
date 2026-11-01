@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import SmoothScrollProvider from '@/components/common/SmoothScrollProvider'
 import PageWipePreloader from '@/components/common/PageWipe'
@@ -23,6 +23,7 @@ const ChairScene = dynamic(() => import('@/components/scene/ChairScene'), {
 
 export default function Home() {
   const { lang, isRTL } = useLanguage()
+  const [isPreloaded, setIsPreloaded] = useState(false)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -43,10 +44,10 @@ export default function Home() {
   return (
     <SmoothScrollProvider>
       {/* Initial Architectural Page Wipe Preloader */}
-      <PageWipePreloader />
+      <PageWipePreloader onComplete={() => setIsPreloaded(true)} />
 
       {/* Layer 3: Top Floating Luxury Architectural Glass Dock (z-[100]) */}
-      <Nav />
+      <Nav isVisible={isPreloaded} />
 
       {/* Layer 0: Fixed 3D Spatial Architectural Living Room (z-[1] - persistent full 3D environment) */}
       <ChairScene />

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { soundEngine } from '@/lib/soundEngine'
 import { useLanguage } from '@/lib/i18n'
 
-export default function Nav() {
+export default function Nav({ isVisible = true }: { isVisible?: boolean }) {
   const { t, lang, toggleLanguage, isRTL } = useLanguage()
   const [activeSection, setActiveSection] = useState('hero')
   const [isMuted, setIsMuted] = useState(false)
@@ -82,7 +82,9 @@ export default function Nav() {
           SINGLE ULTRA-CLEAN ARCHITECTURAL HEADER (72px, Solid Alabaster Glass)
       ========================================================================= */}
       <header
-        className="fixed top-0 left-0 right-0 h-[72px] z-[100] border-b border-[#1C1917]/12 px-[4vw] flex items-center justify-between select-none shadow-[0_2px_12px_rgba(28,25,23,0.04)]"
+        className={`fixed top-0 left-0 right-0 h-[72px] z-[100] border-b border-[#1C1917]/12 px-[4vw] flex items-center justify-between select-none shadow-[0_2px_12px_rgba(28,25,23,0.04)] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full pointer-events-none'
+        }`}
         style={{
           background: 'rgba(246, 241, 234, 0.92)',
           backdropFilter: 'blur(12px)',

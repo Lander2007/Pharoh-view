@@ -122,10 +122,10 @@ export default function PageWipePreloader({ onComplete }: { onComplete?: () => v
     <div
       ref={containerRef}
       onClick={() => finishRef.current()}
-      className={`fixed inset-0 z-[100] flex items-center justify-center overflow-hidden transition-opacity duration-300 cursor-pointer ${
-        isFinished ? 'pointer-events-none opacity-0 invisible hidden' : 'pointer-events-auto'
+      className={`fixed inset-0 z-[99999] flex items-center justify-center overflow-hidden transition-opacity duration-300 cursor-pointer ${
+        isFinished ? 'pointer-events-none opacity-0 invisible hidden' : 'pointer-events-auto bg-[#0D0C0B]'
       }`}
-      style={isFinished ? { display: 'none', pointerEvents: 'none' } : undefined}
+      style={isFinished ? { display: 'none', pointerEvents: 'none' } : { zIndex: 99999, backgroundColor: '#0D0C0B' }}
       aria-hidden={isFinished}
       aria-label="Preloader"
     >
