@@ -8,22 +8,20 @@ import { useLanguage } from '@/lib/i18n'
 export default function Nav() {
   const { t, lang, toggleLanguage, isRTL } = useLanguage()
   const [activeSection, setActiveSection] = useState('hero')
-  const [activeIndex, setActiveIndex] = useState(0)
   const [isMuted, setIsMuted] = useState(false)
-  const [hoveredRulerIndex, setHoveredRulerIndex] = useState<number | null>(null)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const isScrollingRef = useRef(false)
 
   const navItems = [
-    { id: 'problem', num: '02', label: t.nav.problem },
-    { id: 'features', num: '03', label: t.nav.features },
-    { id: 'how-it-works', num: '04', label: t.nav.process },
-    { id: 'sdgs', num: '05', label: t.nav.impact },
-    { id: 'future-plan', num: '06', label: isRTL ? 'خارطة المستقبل' : 'ROADMAP' },
+    { id: 'problem', label: t.nav.problem },
+    { id: 'features', label: t.nav.features },
+    { id: 'how-it-works', label: t.nav.process },
+    { id: 'sdgs', label: t.nav.impact },
+    { id: 'future-plan', label: isRTL ? 'خارطة المستقبل' : 'ROADMAP' },
   ]
 
-  const rulerStations = [
-    { id: 'hero', num: '01', label: isRTL ? 'الفضاء المعماري' : 'HERO' },
+  const sectionsToTrack = [
+    { id: 'hero' },
     ...navItems,
   ]
 
@@ -33,15 +31,14 @@ export default function Nav() {
     const handleScroll = () => {
       if (isScrollingRef.current) return
 
-      const scrollPos = window.scrollY + 200
+      const scrollPos = window.scrollY + 220
 
-      for (let i = rulerStations.length - 1; i >= 0; i--) {
-        const el = document.getElementById(rulerStations[i].id)
+      for (let i = sectionsToTrack.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sectionsToTrack[i].id)
         if (el) {
           const top = el.offsetTop
           if (scrollPos >= top) {
-            setActiveSection(rulerStations[i].id)
-            setActiveIndex(i)
+            setActiveSection(sectionsToTrack[i].id)
             break
           }
         }
@@ -51,28 +48,24 @@ export default function Nav() {
     window.addEventListener('scroll', handleScroll, { passive: true })
     handleScroll()
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [rulerStations])
+  }, [sectionsToTrack])
 
   const toggleSound = () => {
     const nextMuted = soundEngine.toggleMute()
     setIsMuted(nextMuted)
   }
 
-  // Robust programmatic scroll that handshakes with Lenis smooth scroll
-  const scrollToSection = (id: string, index?: number) => {
+  // Smooth scroll handler with Lenis integration
+  const scrollToSection = (id: string) => {
     soundEngine.playClickTick()
-    if (typeof index === 'number') {
-      setActiveIndex(index)
-    }
     setActiveSection(id)
     isScrollingRef.current = true
 
     const el = document.getElementById(id)
     if (el) {
-      // Check for global Lenis instance initialized in SmoothScrollProvider
       const lenis = typeof window !== 'undefined' ? (window as unknown as { __lenis?: { scrollTo: (target: HTMLElement | string, options?: { offset?: number; duration?: number }) => void } }).__lenis : null
       if (lenis && typeof lenis.scrollTo === 'function') {
-        lenis.scrollTo(el, { offset: id === 'hero' ? 0 : -30, duration: 1.15 })
+        lenis.scrollTo(el, { offset: id === 'hero' ? 0 : -20, duration: 1.1 })
       } else {
         el.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }
@@ -80,26 +73,33 @@ export default function Nav() {
 
     setTimeout(() => {
       isScrollingRef.current = false
-    }, 1200)
+    }, 1100)
   }
 
   return (
     <>
       {/* =========================================================================
-          TOP ARCHITECTURAL HEADER (Clear, Crisp, Translucent Glass — Zero Obscuration)
+          SINGLE ULTRA-CLEAN ARCHITECTURAL HEADER (72px, Solid Alabaster Glass)
       ========================================================================= */}
-      <header className="fixed top-0 left-0 right-0 h-[68px] sm:h-[72px] z-[100] bg-[#FAF6EE]/88 backdrop-blur-xl border-b border-[#1C1917]/14 px-[3.5vw] flex items-center justify-between select-none shadow-[0_2px_16px_rgba(28,25,23,0.03)]">
-        {/* Left: Brand Lockup */}
+      <header
+        className="fixed top-0 left-0 right-0 h-[72px] z-[100] border-b border-[#1C1917]/12 px-[4vw] flex items-center justify-between select-none shadow-[0_2px_12px_rgba(28,25,23,0.04)]"
+        style={{
+          background: 'rgba(246, 241, 234, 0.92)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+        }}
+      >
+        {/* Left: Brand Lockup (Single-line, Obsidian Badge + PHAROVIEW | SPATIAL AR) */}
         <Link
           href="/"
           onClick={(e) => {
             e.preventDefault()
-            scrollToSection('hero', 0)
+            scrollToSection('hero')
           }}
-          className="flex items-center gap-3.5 group cursor-pointer shrink-0"
+          className="flex items-center gap-3 group cursor-pointer shrink-0"
         >
-          {/* Sharp Square 36px Badge */}
-          <div className="w-9 h-9 rounded-[2px] bg-[#1C1917] p-1 border border-[#C89D54]/50 shadow-sm flex items-center justify-center shrink-0 group-hover:border-[#C89D54] transition-colors">
+          {/* 34px × 34px obsidian Eye of Horus logo badge */}
+          <div className="w-[34px] h-[34px] rounded-[2px] bg-[#1C1917] p-1 border border-[#C89D54]/50 shadow-sm flex items-center justify-center shrink-0 group-hover:border-[#C89D54] transition-colors">
             <img
               src="/logo nice canva.jpg"
               alt="PHAROVIEW Eye of Horus"
@@ -107,19 +107,20 @@ export default function Nav() {
             />
           </div>
 
-          <div className="flex flex-col text-left rtl:text-right">
-            <span className="font-serif font-bold text-[15px] sm:text-[17px] tracking-[0.16em] text-[#1C1917] uppercase leading-none">
+          <div className="flex items-center gap-2">
+            <span className="font-serif font-semibold text-[15px] tracking-[0.14em] text-[#1C1917] uppercase leading-none">
               {t.nav.brand}
             </span>
-            <span className="font-mono text-[9px] tracking-[0.22em] text-[#8C6239] font-medium uppercase mt-1 leading-none">
-              {isRTL ? 'محرك الواقع المعزز // إصدار ٢.٦' : 'AR_ENGINE // V2.6'}
+            <span className="text-[#1C1917]/25 font-light text-xs">|</span>
+            <span className="font-mono text-[10px] tracking-[0.16em] text-[#8C6239] font-semibold uppercase leading-none">
+              {isRTL ? 'الواقع المعزز' : 'SPATIAL AR'}
             </span>
           </div>
         </Link>
 
-        {/* Center: Clearly Visible Architectural Links (Desktop) */}
-        <nav className="hidden lg:flex items-center gap-7 sm:gap-9">
-          {navItems.map((item, idx) => {
+        {/* Center: 5 Clean Monospace Navigation Links (Desktop) */}
+        <nav className="hidden lg:flex items-center gap-[2.5rem]">
+          {navItems.map((item) => {
             const isActive = activeSection === item.id
             return (
               <a
@@ -127,18 +128,18 @@ export default function Nav() {
                 href={`#${item.id}`}
                 onClick={(e) => {
                   e.preventDefault()
-                  scrollToSection(item.id, idx + 1)
+                  scrollToSection(item.id)
                 }}
-                className={`relative py-1 font-mono text-[12px] font-bold uppercase tracking-[0.18em] transition-colors duration-200 cursor-pointer ${
+                className={`relative py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] transition-colors duration-200 cursor-pointer ${
                   isActive
                     ? 'text-[#1C1917]'
                     : 'text-[#1C1917]/65 hover:text-[#1C1917]'
                 }`}
               >
                 <span>{item.label}</span>
-                {/* Active Gold Indicator Underline */}
+                {/* Sharp 1.5px Solid Underline on Active Item */}
                 <span
-                  className={`absolute -bottom-1 left-0 right-0 h-[2px] bg-[#8C6239] transition-all duration-300 ${
+                  className={`absolute -bottom-1 left-0 right-0 h-[1.5px] bg-[#1C1917] transition-all duration-200 ${
                     isActive ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
                   }`}
                 />
@@ -147,16 +148,16 @@ export default function Nav() {
           })}
         </nav>
 
-        {/* Right: Sharp Architectural Control Cluster */}
+        {/* Right: Unified Sharp-Bordered Control Group (h: 38px) */}
         <div className="flex items-center gap-2 sm:gap-3">
-          <div className="flex items-stretch h-[38px] sm:h-[40px] border border-[#1C1917]/20 bg-[#FAF6EE]/92 shadow-sm rounded-none overflow-hidden">
-            {/* Cell 1: 4-Bar Sound Equalizer Toggle */}
+          <div className="flex items-stretch h-[38px] border border-[#1C1917]/18 bg-transparent rounded-none overflow-hidden">
+            {/* Cell 1: Sound Equalizer Toggle Button */}
             <button
               type="button"
               onClick={toggleSound}
               aria-label={isMuted ? t.common.soundOff : t.common.soundOn}
               title={isMuted ? t.common.soundOff : t.common.soundOn}
-              className="px-3 sm:px-3.5 flex items-center justify-center border-r rtl:border-r-0 rtl:border-l border-[#1C1917]/15 hover:bg-[#1C1917]/5 text-[#1C1917] transition-colors cursor-pointer"
+              className="px-3 flex items-center justify-center border-r rtl:border-r-0 rtl:border-l border-[#1C1917]/12 hover:bg-[#1C1917]/5 text-[#1C1917] transition-colors cursor-pointer"
             >
               {isMuted ? (
                 <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-none stroke-current" strokeWidth="2">
@@ -174,7 +175,7 @@ export default function Nav() {
               )}
             </button>
 
-            {/* Cell 2: Language Switcher */}
+            {/* Cell 2: Language Switcher Button (عربي / EN) */}
             <button
               type="button"
               onClick={() => {
@@ -182,19 +183,19 @@ export default function Nav() {
                 toggleLanguage()
               }}
               title={lang === 'en' ? 'التحويل إلى العربية' : 'Switch to English'}
-              className="px-3 sm:px-3.5 flex items-center justify-center font-mono text-[11px] font-bold text-[#1C1917] hover:text-[#8C6239] hover:bg-[#1C1917]/5 border-r rtl:border-r-0 rtl:border-l border-[#1C1917]/15 transition-colors cursor-pointer uppercase tracking-wider"
+              className="px-3.5 flex items-center justify-center font-mono text-[12px] font-bold text-[#1C1917] hover:text-[#8C6239] hover:bg-[#1C1917]/5 border-r rtl:border-r-0 rtl:border-l border-[#1C1917]/12 transition-colors cursor-pointer uppercase tracking-wider"
             >
               {lang === 'en' ? 'عربي' : 'EN'}
             </button>
 
-            {/* Cell 3: Primary CTA with Micro-Translating Vector Arrow */}
+            {/* Cell 3: Primary CTA (GET APP ↗) */}
             <a
               href="#cta"
               onClick={(e) => {
                 e.preventDefault()
                 scrollToSection('cta')
               }}
-              className="group flex items-center gap-2 bg-[#1C1917] hover:bg-[#8C6239] text-[#F5EEE6] px-4 sm:px-5 h-full font-mono text-[11px] font-bold tracking-[0.14em] uppercase transition-colors duration-200 cursor-pointer"
+              className="group flex items-center gap-1.5 bg-[#1C1917] hover:bg-[#8C6239] text-[#F5EEE6] px-[18px] h-full font-mono text-[11px] font-bold tracking-[0.12em] uppercase transition-colors duration-200 cursor-pointer"
             >
               <span>{t.nav.getApp}</span>
               <svg
@@ -214,7 +215,7 @@ export default function Nav() {
               setMobileMenuOpen(!mobileMenuOpen)
             }}
             aria-label="Toggle Mobile Menu"
-            className="lg:hidden p-2 rounded-[2px] border border-[#1C1917]/20 bg-[#FAF6EE] text-[#1C1917] hover:bg-[#1C1917]/5 transition-colors cursor-pointer"
+            className="lg:hidden p-2 rounded-none border border-[#1C1917]/20 bg-[#FAF6EE] text-[#1C1917] hover:bg-[#1C1917]/5 transition-colors cursor-pointer"
           >
             <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none stroke-current" strokeWidth="2">
               {mobileMenuOpen ? (
@@ -228,132 +229,36 @@ export default function Nav() {
       </header>
 
       {/* =========================================================================
-          SIGNATURE VERTICAL BLUEPRINT RULER (Side Caliper Navigation)
-      ========================================================================= */}
-      <nav
-        aria-label="Vertical Blueprint Ruler"
-        className="fixed top-1/2 -translate-y-1/2 right-[1.8vw] rtl:right-auto rtl:left-[1.8vw] z-[95] select-none pointer-events-auto hidden md:flex flex-col items-center"
-      >
-        <div className="relative flex flex-col items-center py-2">
-          {/* Continuous Architectural Vertical 1px Scale Line */}
-          <div className="absolute top-2 bottom-2 w-px bg-[#1C1917]/18 pointer-events-none" />
-
-          {/* Active Sliding Caliper Bracket */}
-          <div
-            className="absolute -left-6 rtl:-left-auto rtl:-right-6 w-12 pointer-events-none transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
-            style={{
-              transform: `translateY(${activeIndex * 48}px)`,
-            }}
-          >
-            <div className="flex items-center justify-center font-mono text-[10px] font-bold text-[#8C6239] tracking-widest drop-shadow-[0_0_8px_rgba(200,157,84,0.4)]">
-              <span>[</span>
-              <span className="mx-0.5">{rulerStations[activeIndex].num}</span>
-              <span>]</span>
-            </div>
-          </div>
-
-          {/* Station Nodes */}
-          <div className="flex flex-col gap-0 relative z-10">
-            {rulerStations.map((st, idx) => {
-              const isActive = activeIndex === idx
-              const isHovered = hoveredRulerIndex === idx
-
-              return (
-                <div
-                  key={st.id}
-                  className="relative flex items-center justify-center h-[48px] w-[34px]"
-                  onMouseEnter={() => {
-                    setHoveredRulerIndex(idx)
-                    soundEngine.playHoverTick()
-                  }}
-                  onMouseLeave={() => setHoveredRulerIndex(null)}
-                >
-                  {/* Subtle intermediate millimeter ticks */}
-                  <div className="absolute top-0 w-2 h-px bg-[#1C1917]/20 pointer-events-none" />
-                  <div className="absolute top-[16px] w-1.5 h-px bg-[#1C1917]/12 pointer-events-none" />
-                  <div className="absolute top-[32px] w-1.5 h-px bg-[#1C1917]/12 pointer-events-none" />
-
-                  {/* Station Node Trigger */}
-                  <button
-                    type="button"
-                    onClick={() => scrollToSection(st.id, idx)}
-                    className="relative flex items-center justify-center w-full h-full cursor-pointer group"
-                    title={st.label}
-                  >
-                    <span
-                      className={`h-[2px] transition-all duration-300 ${
-                        isActive
-                          ? 'w-5 bg-[#8C6239]'
-                          : isHovered
-                          ? 'w-4 bg-[#1C1917]'
-                          : 'w-2.5 bg-[#1C1917]/40 group-hover:w-3.5 group-hover:bg-[#1C1917]'
-                      }`}
-                    />
-
-                    <span
-                      className={`absolute right-6 rtl:right-auto rtl:left-6 font-mono text-[9px] font-bold transition-all duration-300 ${
-                        isActive
-                          ? 'text-[#8C6239] opacity-100 scale-105'
-                          : isHovered
-                          ? 'text-[#1C1917] opacity-90'
-                          : 'text-[#6E655F] opacity-40 group-hover:opacity-90'
-                      }`}
-                    >
-                      {st.num}
-                    </span>
-                  </button>
-
-                  {/* Frosted Slide-Out Label Card */}
-                  <div
-                    className={`absolute pointer-events-none transition-all duration-300 z-20 ${
-                      isRTL
-                        ? 'left-10 origin-left'
-                        : 'right-10 origin-right'
-                    } ${
-                      isHovered || (isActive && hoveredRulerIndex === null)
-                        ? 'opacity-100 translate-x-0 scale-100'
-                        : 'opacity-0 translate-x-2 rtl:-translate-x-2 scale-95'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 px-3 py-1 bg-[#FAF6EE]/94 backdrop-blur-md border border-[#1C1917]/16 shadow-[0_4px_16px_rgba(28,25,23,0.08)] whitespace-nowrap">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#8C6239]" />
-                      <span className="font-mono text-[10px] font-bold tracking-[0.16em] uppercase text-[#1C1917]">
-                        {st.label}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      </nav>
-
-      {/* =========================================================================
           MOBILE SLIDE-DOWN DRAWER MENU (< lg)
       ========================================================================= */}
       {mobileMenuOpen && (
-        <div className="fixed top-[68px] left-0 right-0 z-[99] bg-[#FAF6EE]/98 backdrop-blur-2xl border-b border-[#1C1917]/15 shadow-2xl p-6 lg:hidden flex flex-col gap-4 animate-in fade-in slide-in-from-top-4 duration-200">
+        <div
+          className="fixed top-[72px] left-0 right-0 z-[99] border-b border-[#1C1917]/15 shadow-2xl p-6 lg:hidden flex flex-col gap-4 animate-in fade-in slide-in-from-top-4 duration-200"
+          style={{
+            background: 'rgba(246, 241, 234, 0.98)',
+            backdropFilter: 'blur(16px)',
+          }}
+        >
           <p className="font-mono text-[10px] uppercase tracking-widest text-[#8C6239] font-bold border-b border-[#1C1917]/10 pb-2">
             {isRTL ? 'فهرس الملاحة المعمارية' : 'ARCHITECTURAL NAVIGATION'}
           </p>
           <div className="flex flex-col gap-2">
-            {rulerStations.map((st, idx) => (
+            {navItems.map((item, idx) => (
               <button
-                key={st.id}
+                key={item.id}
                 type="button"
                 onClick={() => {
-                  scrollToSection(st.id, idx)
+                  scrollToSection(item.id)
                   setMobileMenuOpen(false)
                 }}
-                className={`flex items-center justify-between py-3 px-4 rounded-[2px] font-mono text-xs font-bold transition-all text-left rtl:text-right cursor-pointer ${
-                  activeSection === st.id
+                className={`flex items-center justify-between py-3 px-4 rounded-none font-mono text-xs font-bold transition-all text-left rtl:text-right cursor-pointer ${
+                  activeSection === item.id
                     ? 'bg-[#1C1917] text-[#FAF6EE]'
                     : 'text-[#1C1917] hover:bg-[#1C1917]/5'
                 }`}
               >
-                <span>{st.label}</span>
-                <span className="font-mono text-[10px] opacity-70">[{st.num}]</span>
+                <span>{item.label}</span>
+                <span className="font-mono text-[10px] opacity-70">[0{idx + 2}]</span>
               </button>
             ))}
           </div>

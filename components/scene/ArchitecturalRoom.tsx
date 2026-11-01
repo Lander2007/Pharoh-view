@@ -227,6 +227,30 @@ export default function ArchitecturalRoom({
     return tex
   }, [])
 
+  // [ + READY TO STAGE ] Floor Badge Texture for initial AR Reticle
+  const readyToStageTex = useMemo(() => {
+    if (typeof document === 'undefined') return null
+    const canvas = document.createElement('canvas')
+    canvas.width = 512
+    canvas.height = 128
+    const ctx = canvas.getContext('2d')
+    if (ctx) {
+      ctx.fillStyle = 'rgba(28, 25, 23, 0.88)'
+      ctx.fillRect(0, 0, 512, 128)
+      ctx.strokeStyle = '#C89D54'
+      ctx.lineWidth = 4
+      ctx.strokeRect(4, 4, 504, 120)
+      ctx.fillStyle = '#E8D8C3'
+      ctx.font = 'bold 28px monospace'
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText('[ + READY TO STAGE ]', 256, 64)
+    }
+    const tex = new THREE.CanvasTexture(canvas)
+    tex.colorSpace = THREE.SRGBColorSpace
+    return tex
+  }, [])
+
   // 10x10 Precision Laser Bounding Grid Geometry
   const lidarGridLinesGeo = useMemo(() => {
     const points: THREE.Vector3[] = []
@@ -553,10 +577,9 @@ export default function ArchitecturalRoom({
 
     // Initial floor reticle (pulses gently at heroP = 0, fades out during Stage 1)
     if (reticleGroupRef.current && reticleMatRef.current) {
-      const pulse = 0.5 + Math.sin(time * 2.8) * 0.2
-      const opacity = pulse * Math.max(0, 1 - heroP * 6)
+      const pulse = 0.65 + Math.sin(time * 2.4) * 0.2
+      const opacity = pulse * Math.max(0, 1 - heroP * 4.0)
       reticleMatRef.current.opacity = opacity
-      reticleGroupRef.current.rotation.z = time * 0.08
       reticleGroupRef.current.visible = opacity > 0.01
     }
 
@@ -938,6 +961,14 @@ export default function ArchitecturalRoom({
             </mesh>
           </group>
         ))}
+
+        {/* Floating [ + READY TO STAGE ] Floor Reticle Badge */}
+        {readyToStageTex && (
+          <mesh position={[0, -0.96, 0.001]}>
+            <planeGeometry args={[0.64, 0.16]} />
+            <meshBasicMaterial map={readyToStageTex} transparent opacity={0.92} depthWrite={false} />
+          </mesh>
+        )}
       </group>
 
       {/* =========================================================================
@@ -1065,8 +1096,8 @@ export default function ArchitecturalRoom({
         </mesh>
       </group>
 
-      {/* Far Corner Sculptural Travertine Pedestal & Ceramic Vessel */}
-      <group position={[isRTL ? 2.6 : -2.6, 0, -2.6]}>
+      {/* Far Corner Sculptural Travertine Pedestal & Ceramic Vessel (Tucked cleanly into far wall corner) */}
+      <group position={[isRTL ? 3.6 : -3.6, 0, -3.2]}>
         <mesh
           position={[0, 0.42, 0]}
           material={travertineMaterial}
