@@ -12,6 +12,7 @@ export interface DeviceCapabilities {
   shadowMapSize: number
   enableRealtimeShadows: boolean
   maxAnisotropy: number
+  pinDistance: string
 }
 
 // Default desktop-tier configuration
@@ -19,10 +20,11 @@ const DEFAULT_CAPABILITIES: DeviceCapabilities = {
   isMobile: false,
   isPortrait: false,
   qualityProfile: 'high',
-  dpr: [1, 1.75],
+  dpr: [1, 2.0],
   shadowMapSize: 1024,
   enableRealtimeShadows: true,
   maxAnisotropy: 8,
+  pinDistance: '+=180%',
 }
 
 export function useDeviceCapabilities(): DeviceCapabilities {
@@ -107,13 +109,13 @@ export function useDeviceCapabilities(): DeviceCapabilities {
 
       switch (profile) {
         case 'high':
-          dpr = isMobileDevice ? [1, 1.5] : [1, 1.75]
-          shadowMapSize = 1024
+          dpr = isMobileDevice ? [1, 1.5] : [1, 2.0]
+          shadowMapSize = isMobileDevice ? 512 : 1024
           enableRealtimeShadows = true
-          maxAnisotropy = 8
+          maxAnisotropy = isMobileDevice ? 4 : 8
           break
         case 'balanced':
-          dpr = [1, 1.25]
+          dpr = isMobileDevice ? [1, 1.25] : [1, 1.5]
           shadowMapSize = 512
           enableRealtimeShadows = true
           maxAnisotropy = 4
@@ -134,6 +136,7 @@ export function useDeviceCapabilities(): DeviceCapabilities {
         shadowMapSize,
         enableRealtimeShadows,
         maxAnisotropy,
+        pinDistance: isMobileDevice ? '+=125%' : '+=180%',
       }
     }
 

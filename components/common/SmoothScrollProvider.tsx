@@ -13,11 +13,14 @@ export default function SmoothScrollProvider({ children }: { children: React.Rea
   useEffect(() => {
     if (typeof window === 'undefined') return
 
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+
     const lenis = new Lenis({
-      duration: 1.15,
+      duration: isTouch ? 0.9 : 1.15,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
-      touchMultiplier: 1.5,
+      syncTouch: false,
+      touchMultiplier: 1.0,
     })
 
     lenisRef.current = lenis
@@ -29,7 +32,7 @@ export default function SmoothScrollProvider({ children }: { children: React.Rea
     }
 
     gsap.ticker.add(tickerCb)
-    gsap.ticker.lagSmoothing(0)
+    gsap.ticker.lagSmoothing(isTouch ? 500 : 0, isTouch ? 33 : 0)
 
     // Global reference for programmatic scrolling
     ;(window as unknown as { __lenis: Lenis }).__lenis = lenis

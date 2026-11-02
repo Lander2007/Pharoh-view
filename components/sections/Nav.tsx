@@ -240,11 +240,11 @@ export default function Nav({ isVisible = true }: { isVisible?: boolean }) {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="font-serif font-semibold text-[15px] tracking-[0.14em] text-[#1C1917] uppercase leading-none">
+            <span className="font-serif font-semibold text-[14px] sm:text-[15px] tracking-[0.14em] text-[#1C1917] uppercase leading-none">
               {t.nav.brand}
             </span>
-            <span className="text-[#1C1917]/25 font-light text-xs">|</span>
-            <span className="font-mono text-[10px] tracking-[0.16em] text-[#8C6239] font-semibold uppercase leading-none">
+            <span className="text-[#1C1917]/25 font-light text-xs hidden sm:inline">|</span>
+            <span className="font-mono text-[10px] tracking-[0.16em] text-[#8C6239] font-semibold uppercase leading-none hidden sm:inline">
               {isRTL ? 'الواقع المعزز' : 'SPATIAL AR'}
             </span>
           </div>
@@ -356,7 +356,7 @@ export default function Nav({ isVisible = true }: { isVisible?: boolean }) {
                 e.preventDefault()
                 scrollToSection('cta')
               }}
-              className="group flex items-center gap-1.5 bg-[#1C1917] hover:bg-[#8C6239] text-[#F5EEE6] px-[18px] h-full font-mono text-[11px] font-bold tracking-[0.12em] uppercase transition-colors duration-200 cursor-pointer"
+              className="hidden sm:flex group items-center gap-1.5 bg-[#1C1917] hover:bg-[#8C6239] text-[#F5EEE6] px-[16px] sm:px-[18px] h-full font-mono text-[10px] sm:text-[11px] font-bold tracking-[0.12em] uppercase transition-colors duration-200 cursor-pointer shrink-0"
             >
               <span>{t.nav.getApp}</span>
               <svg
@@ -376,7 +376,7 @@ export default function Nav({ isVisible = true }: { isVisible?: boolean }) {
               setMobileMenuOpen(!mobileMenuOpen)
             }}
             aria-label="Toggle Mobile Menu"
-            className="lg:hidden p-2 rounded-none border border-[#1C1917]/20 bg-[#FAF6EE] text-[#1C1917] hover:bg-[#1C1917]/5 transition-colors cursor-pointer"
+            className="lg:hidden p-2.5 rounded-none border border-[#1C1917]/20 bg-[#FAF6EE] text-[#1C1917] hover:bg-[#1C1917]/5 active:bg-[#1C1917]/10 transition-colors cursor-pointer shrink-0"
           >
             <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none stroke-current" strokeWidth="2">
               {mobileMenuOpen ? (
@@ -390,55 +390,65 @@ export default function Nav({ isVisible = true }: { isVisible?: boolean }) {
       </header>
 
       {/* =========================================================================
-          MOBILE SLIDE-DOWN DRAWER MENU (< lg)
+          MOBILE SLIDE-DOWN DRAWER MENU & BACKDROP (< lg)
       ========================================================================= */}
       {mobileMenuOpen && (
-        <div
-          className="fixed top-[72px] left-0 right-0 z-[99] border-b border-[#1C1917]/15 shadow-2xl p-6 lg:hidden flex flex-col gap-4 animate-in fade-in slide-in-from-top-4 duration-200"
-          style={{
-            background: 'rgba(246, 241, 234, 0.98)',
-            backdropFilter: 'blur(16px)',
-          }}
-        >
-          <p className="font-mono text-[10px] uppercase tracking-widest text-[#8C6239] font-bold border-b border-[#1C1917]/10 pb-2">
-            {isRTL ? 'فهرس الملاحة المعمارية' : 'ARCHITECTURAL NAVIGATION'}
-          </p>
-          <div className="flex flex-col gap-2">
-            {navItems.map((item, idx) => (
+        <>
+          {/* Backdrop overlay to close drawer on tap */}
+          <div
+            onClick={() => setMobileMenuOpen(false)}
+            className="fixed inset-0 z-[98] bg-[#1C1917]/40 backdrop-blur-sm lg:hidden transition-opacity"
+            aria-hidden="true"
+          />
+
+          <div
+            className="fixed top-[72px] left-0 right-0 z-[99] border-b border-[#1C1917]/15 shadow-2xl p-5 sm:p-6 lg:hidden flex flex-col gap-4 animate-in fade-in slide-in-from-top-3 duration-200"
+            style={{
+              background: 'rgba(246, 241, 234, 0.98)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+            }}
+          >
+            <p className="font-mono text-[10px] uppercase tracking-widest text-[#8C6239] font-bold border-b border-[#1C1917]/10 pb-2">
+              {isRTL ? 'فهرس الملاحة المعمارية' : 'ARCHITECTURAL NAVIGATION'}
+            </p>
+            <div className="flex flex-col gap-1.5">
+              {navItems.map((item, idx) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => {
+                    scrollToSection(item.id)
+                    setMobileMenuOpen(false)
+                  }}
+                  className={`flex items-center justify-between py-3 px-4 min-h-[46px] rounded-none font-mono text-xs font-bold transition-all text-left rtl:text-right cursor-pointer ${
+                    activeSection === item.id
+                      ? 'bg-[#1C1917] text-[#FAF6EE]'
+                      : 'text-[#1C1917] hover:bg-[#1C1917]/5 active:bg-[#1C1917]/10'
+                  }`}
+                >
+                  <span>{item.label}</span>
+                  <span className="font-mono text-[10px] opacity-70">[0{idx + 2}]</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="pt-3 border-t border-[#1C1917]/10 flex items-center justify-between gap-3">
+              <span className="font-mono text-[10px] text-[#6E655F]">PHAROVIEW SPATIAL AR</span>
               <button
-                key={item.id}
                 type="button"
                 onClick={() => {
-                  scrollToSection(item.id)
+                  scrollToSection('cta')
                   setMobileMenuOpen(false)
                 }}
-                className={`flex items-center justify-between py-3 px-4 rounded-none font-mono text-xs font-bold transition-all text-left rtl:text-right cursor-pointer ${
-                  activeSection === item.id
-                    ? 'bg-[#1C1917] text-[#FAF6EE]'
-                    : 'text-[#1C1917] hover:bg-[#1C1917]/5'
-                }`}
+                className="bg-[#1C1917] hover:bg-[#8C6239] text-[#FAF6EE] px-4 py-2.5 min-h-[42px] font-mono text-xs font-bold uppercase inline-flex items-center gap-1.5 shadow-sm"
               >
-                <span>{item.label}</span>
-                <span className="font-mono text-[10px] opacity-70">[0{idx + 2}]</span>
+                <span>{t.nav.getApp}</span>
+                <span>↗</span>
               </button>
-            ))}
+            </div>
           </div>
-
-          <div className="pt-3 border-t border-[#1C1917]/10 flex items-center justify-between">
-            <span className="font-mono text-[10px] text-[#6E655F]">PHAROVIEW SPATIAL AR</span>
-            <button
-              type="button"
-              onClick={() => {
-                scrollToSection('cta')
-                setMobileMenuOpen(false)
-              }}
-              className="bg-[#1C1917] text-[#FAF6EE] px-4 py-2 font-mono text-xs font-bold uppercase inline-flex items-center gap-1.5"
-            >
-              <span>{t.nav.getApp}</span>
-              <span>↗</span>
-            </button>
-          </div>
-        </div>
+        </>
       )}
     </>
   )

@@ -306,6 +306,7 @@ export default function ChairScene() {
   const capabilities = useDeviceCapabilities()
   const [hasWebGL, setHasWebGL] = useState(false)
   const [tested, setTested] = useState(false)
+  const [isPageVisible, setIsPageVisible] = useState(true)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -319,8 +320,10 @@ export default function ChairScene() {
     }
 
     const handleVisibility = () => {
+      const visible = !document.hidden
+      setIsPageVisible(visible)
       if (canvasRef.current) {
-        canvasRef.current.style.visibility = document.hidden ? 'hidden' : 'visible'
+        canvasRef.current.style.visibility = visible ? 'visible' : 'hidden'
       }
     }
     document.addEventListener('visibilitychange', handleVisibility)
@@ -343,20 +346,26 @@ export default function ChairScene() {
         <CanvasErrorBoundary fallback={<Architectural2DStage isRTL={isRTL} />}>
           {tested && hasWebGL ? (
             <Canvas
-              shadows
-              camera={{ position: [-1.4, 1.48, 4.3], fov: 41 }}
-              dpr={[1, 1.5]}
-              performance={{ min: 0.6 }}
+              shadows={capabilities.enableRealtimeShadows}
+              camera={{
+                position: capabilities.isMobile ? [0.0, 1.55, 4.2] : [-1.4, 1.48, 4.3],
+                fov: capabilities.isMobile ? 54 : 41,
+              }}
+              dpr={capabilities.dpr}
+              frameloop={isPageVisible ? 'always' : 'never'}
+              performance={{ min: 0.5, max: 1.0 }}
               gl={{
-                antialias: true,
+                antialias: capabilities.qualityProfile !== 'performance',
                 alpha: true,
                 powerPreference: 'high-performance',
                 toneMapping: THREE.ACESFilmicToneMapping,
                 toneMappingExposure: 1.15,
               }}
               onCreated={({ gl }) => {
-                gl.shadowMap.enabled = true
-                gl.shadowMap.type = THREE.PCFShadowMap
+                if (capabilities.enableRealtimeShadows) {
+                  gl.shadowMap.enabled = true
+                  gl.shadowMap.type = THREE.PCFShadowMap
+                }
               }}
             >
               <SceneContent
@@ -373,20 +382,20 @@ export default function ChairScene() {
         </CanvasErrorBoundary>
       </div>
 
-      {/* Inspect Mode 3D HUD & Exit Button */}
+      {/* Inspect Mode 3D HUD & Exit Button (Mobile & Desktop Responsive) */}
       {inspectMode && (
-        <div className="fixed inset-0 z-50 pointer-events-none flex flex-col justify-between p-6 sm:p-10 text-left rtl:text-right select-none">
+        <div className="fixed inset-0 z-50 pointer-events-none flex flex-col justify-between p-4 sm:p-10 text-left rtl:text-right select-none">
           {/* Top HUD */}
-          <div className="flex justify-between items-start">
-            <div className="glass-architectural-dark p-4 rounded-[2px] font-mono text-[10px] text-[#A4774B] border border-[#A4774B]/40">
-              <p className="font-bold text-xs text-[#F3EEE5] mb-1">{t.common.activeGeometry}</p>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4 mt-2 sm:mt-0">
+            <div className="glass-architectural-dark p-3 sm:p-4 rounded-[2px] font-mono text-[9px] sm:text-[10px] text-[#A4774B] border border-[#A4774B]/40 max-w-[280px] sm:max-w-none">
+              <p className="font-bold text-xs text-[#F3EEE5] mb-0.5">{t.common.activeGeometry}</p>
               <p className="text-[#DED2C0]">{t.common.xrayWireframe}</p>
-              <p className="text-[#FAF5EE]/70 mt-1">{t.common.orbitHint}</p>
+              <p className="text-[#FAF5EE]/70 mt-0.5">{t.common.orbitHint}</p>
             </div>
 
-            <div className="glass-architectural-dark p-4 rounded-[2px] font-mono text-[10px] text-[#A4774B] border border-[#A4774B]/40 text-right rtl:text-left">
+            <div className="glass-architectural-dark p-3 sm:p-4 rounded-[2px] font-mono text-[9px] sm:text-[10px] text-[#A4774B] border border-[#A4774B]/40 text-left sm:text-right rtl:text-right sm:rtl:text-left">
               <p className="font-bold text-[#F3EEE5]">{t.common.archDimensions}</p>
-              <p className="text-[#FAF5EE]/80 mt-1">
+              <p className="text-[#FAF5EE]/80 mt-0.5">
                 {t.common.dimWidth} &bull; {t.common.dimHeight} &bull; {t.common.dimDepth}
               </p>
               <p className="text-[#A4774B] mt-0.5">{t.common.tolerance}</p>
@@ -394,16 +403,16 @@ export default function ChairScene() {
           </div>
 
           {/* Bottom Floating Toolbar: Material Swatches + Exit Button */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pointer-events-auto">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 pointer-events-auto pb-4 sm:pb-0">
             {/* Live Material Swatches */}
-            <div className="glass-architectural-dark px-4 py-2 rounded-none border border-[#A4774B]/40 shadow-2xl flex items-center gap-2">
-              <span className="font-mono text-[10px] font-bold text-[#A4774B] uppercase tracking-wider pr-2 border-r border-[#A4774B]/30 rtl:border-r-0 rtl:border-l rtl:pr-0 rtl:pl-2">
+            <div className="glass-architectural-dark px-3 sm:px-4 py-2 rounded-none border border-[#A4774B]/40 shadow-2xl flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 max-w-full">
+              <span className="font-mono text-[9px] sm:text-[10px] font-bold text-[#A4774B] uppercase tracking-wider pr-2 border-r border-[#A4774B]/30 rtl:border-r-0 rtl:border-l rtl:pr-0 rtl:pl-2 shrink-0">
                 {t.hero.materialsTitle}
               </span>
               <button
                 type="button"
                 onClick={() => sceneState.setMaterialVariant('oak')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-none font-mono text-[10px] transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-2 sm:py-1.5 min-h-[40px] sm:min-h-0 rounded-none font-mono text-[10px] transition-all cursor-pointer ${
                   materialVariant === 'oak'
                     ? 'bg-[#F3EEE5] text-[#1C1917] font-bold shadow-md'
                     : 'text-[#FAF5EE]/70 hover:text-[#FAF5EE] hover:bg-white/10'
@@ -415,7 +424,7 @@ export default function ChairScene() {
               <button
                 type="button"
                 onClick={() => sceneState.setMaterialVariant('boucle')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-none font-mono text-[10px] transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-2 sm:py-1.5 min-h-[40px] sm:min-h-0 rounded-none font-mono text-[10px] transition-all cursor-pointer ${
                   materialVariant === 'boucle'
                     ? 'bg-[#F3EEE5] text-[#1C1917] font-bold shadow-md'
                     : 'text-[#FAF5EE]/70 hover:text-[#FAF5EE] hover:bg-white/10'
@@ -427,7 +436,7 @@ export default function ChairScene() {
               <button
                 type="button"
                 onClick={() => sceneState.setMaterialVariant('walnut')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-none font-mono text-[10px] transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-2 sm:py-1.5 min-h-[40px] sm:min-h-0 rounded-none font-mono text-[10px] transition-all cursor-pointer ${
                   materialVariant === 'walnut'
                     ? 'bg-[#F3EEE5] text-[#1C1917] font-bold shadow-md'
                     : 'text-[#FAF5EE]/70 hover:text-[#FAF5EE] hover:bg-white/10'
@@ -442,7 +451,7 @@ export default function ChairScene() {
             <button
               type="button"
               onClick={() => sceneState.toggleInspectMode(false)}
-              className="inline-flex items-center gap-2.5 px-6 py-3 rounded-none bg-[#1C1917] text-[#F3EEE5] font-mono text-xs uppercase tracking-wider font-bold shadow-2xl hover:bg-[#A4774B] transition-all cursor-pointer"
+              className="inline-flex items-center justify-center gap-2.5 px-6 py-3 min-h-[44px] rounded-none bg-[#1C1917] text-[#F3EEE5] font-mono text-xs uppercase tracking-wider font-bold shadow-2xl hover:bg-[#A4774B] transition-all cursor-pointer"
             >
               <span>✕</span>
               <span>{t.common.exitInspect}</span>
