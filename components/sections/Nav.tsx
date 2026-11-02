@@ -28,7 +28,7 @@ export default function Nav({ isVisible = true }: { isVisible?: boolean }) {
 
   const navItems: NavItem[] = [
     { id: 'problem', label: t.nav.problem },
-    { id: 'features', label: t.nav.features },
+    { id: 'solution', label: t.nav.features },
     { id: 'how-it-works', label: t.nav.process },
     { id: 'sdgs', label: t.nav.impact },
     { id: 'future-plan', label: isRTL ? 'خارطة المستقبل' : 'ROADMAP' },
@@ -48,7 +48,7 @@ export default function Nav({ isVisible = true }: { isVisible?: boolean }) {
     const sections = [
       { id: 'hero', selector: '#hero' },
       { id: 'problem', selector: '#problem' },
-      { id: 'features', selector: '#features' },
+      { id: 'solution', selector: '#solution, #features' },
       { id: 'how-it-works', selector: '#how-it-works' },
       { id: 'sdgs', selector: '#sdgs' },
       { id: 'future-plan', selector: '#future-plan' },

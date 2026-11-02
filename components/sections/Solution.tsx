@@ -19,25 +19,31 @@ export default function Solution() {
     if (typeof window === 'undefined') return
 
     const ctx = gsap.context(() => {
-      // Section 02 -> 03: Iris / clip-path rectangular shutter expand wipe
-      gsap.fromTo(
-        shutterRef.current,
-        {
-          clipPath: 'inset(16% 16% 16% 16%)',
-          opacity: 0.85,
-        },
-        {
-          clipPath: 'inset(0% 0% 0% 0%)',
-          opacity: 1,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top 85%',
-            end: 'top 20%',
-            scrub: 1,
+      const isMobile = window.innerWidth < 1024
+      if (!isMobile) {
+        // Section 02 -> 03: Iris / clip-path rectangular shutter expand wipe on desktop
+        gsap.fromTo(
+          shutterRef.current,
+          {
+            clipPath: 'inset(8% 8% 8% 8%)',
+            opacity: 0.9,
           },
-        }
-      )
+          {
+            clipPath: 'inset(0% 0% 0% 0%)',
+            opacity: 1,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 85%',
+              end: 'top 35%',
+              scrub: 1,
+            },
+          }
+        )
+      } else if (shutterRef.current) {
+        shutterRef.current.style.clipPath = 'none'
+        shutterRef.current.style.opacity = '1'
+      }
     }, sectionRef)
 
     setTimeout(() => {
@@ -56,10 +62,13 @@ export default function Solution() {
 
   return (
     <section
-      id="features"
+      id="solution"
       ref={sectionRef}
       className="relative z-10 min-h-screen flex items-center py-24 px-6 lg:px-12 overflow-hidden bg-transparent"
     >
+      {/* Anchor aliases for #solve and #features */}
+      <div id="solve" className="absolute -top-24 pointer-events-none" />
+      <div id="features" className="absolute -top-24 pointer-events-none" />
       <div
         ref={shutterRef}
         className="relative z-10 max-w-7xl mx-auto w-full transition-all will-change-transform"
