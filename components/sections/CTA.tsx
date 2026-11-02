@@ -50,7 +50,7 @@ export default function CTA() {
             />
 
             <MagneticButton
-              href="/pharoview.apk"
+              href="/app-release.apk"
               download="PharoView-AR.apk"
               label={t.cta.downloadAndroid}
               variant="secondary"

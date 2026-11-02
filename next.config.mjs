@@ -6,6 +6,18 @@ const nextConfig = {
       { protocol: 'https', hostname: 'images.unsplash.com' },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/pharoview.apk',
+        destination: '/app-release.apk',
+      },
+      {
+        source: '/PHAROVIEW%20%20Web.apk',
+        destination: '/app-release.apk',
+      },
+    ]
+  },
   webpack(config, { dev }) {
     if (dev) {
       // Disable eval-based source maps — eval() is blocked by iframe CSP in Figma Make
