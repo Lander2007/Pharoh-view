@@ -37,6 +37,7 @@ export default function CinematicStory() {
       pinSpacing: true,
       scrub: isMobile ? 0.6 : 1,
       anticipatePin: 1,
+      refreshPriority: 10,
       onUpdate: (self) => {
         const p = self.progress // 0.0 to 1.0
         sceneState.setHeroFurnishProgress(p)

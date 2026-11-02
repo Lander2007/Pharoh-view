@@ -39,42 +39,61 @@ export default function Nav({ isVisible = true }: { isVisible?: boolean }) {
     setIsMuted(soundEngine.isMuted())
   }, [])
 
-  // 1. SCROLL-SYNCED ACTIVE INDICATOR USING GSAP SCROLLTRIGGER
+  // 1. SCROLL-SYNCED ACTIVE INDICATOR WITH DETERMINISTIC BOUNDING RECT DETECTION
   useEffect(() => {
     if (typeof window === 'undefined') return
 
-    const triggers: ScrollTrigger[] = []
+    // Ordered from bottom of page to top of page
+    const sectionIds = ['future-plan', 'sdgs', 'how-it-works', 'solution', 'problem']
 
-    const sections = [
-      { id: 'hero', selector: '#hero' },
-      { id: 'problem', selector: '#problem' },
-      { id: 'solution', selector: '#solution, #features' },
-      { id: 'how-it-works', selector: '#how-it-works' },
-      { id: 'sdgs', selector: '#sdgs' },
-      { id: 'future-plan', selector: '#future-plan' },
-    ]
+    const checkActiveSection = () => {
+      if (isScrollingRef.current) return
 
-    // Create ScrollTrigger watchers for precise viewport section detection
-    sections.forEach(({ id, selector }) => {
-      const el = document.querySelector(selector)
-      if (el) {
-        const trigger = ScrollTrigger.create({
-          trigger: el,
-          start: 'top 45%',
-          end: 'bottom 45%',
-          onEnter: () => {
-            if (!isScrollingRef.current) setActiveSection(id)
-          },
-          onEnterBack: () => {
-            if (!isScrollingRef.current) setActiveSection(id)
-          },
-        })
-        triggers.push(trigger)
+      const scrollY = window.scrollY || document.documentElement.scrollTop || 0
+
+      // Near top of page: always highlight hero (which hides underline indicator)
+      if (scrollY < 80) {
+        setActiveSection((prev) => (prev !== 'hero' ? 'hero' : prev))
+        return
       }
-    })
+
+      // At bottom of page: always activate last roadmap section
+      const scrollHeight = Math.max(
+        document.documentElement.scrollHeight,
+        document.body.scrollHeight
+      )
+      if (window.innerHeight + scrollY >= scrollHeight - 80) {
+        setActiveSection((prev) => (prev !== 'future-plan' ? 'future-plan' : prev))
+        return
+      }
+
+      const threshold = window.innerHeight * 0.45
+      let nextSection = 'hero'
+
+      for (const id of sectionIds) {
+        const el = document.getElementById(id)
+        if (el) {
+          const rect = el.getBoundingClientRect()
+          if (rect.top <= threshold) {
+            nextSection = id
+            break
+          }
+        }
+      }
+
+      setActiveSection((prev) => (prev !== nextSection ? nextSection : prev))
+    }
+
+    // Run once after initial layout settles
+    const initialTimer = setTimeout(checkActiveSection, 150)
+
+    window.addEventListener('scroll', checkActiveSection, { passive: true })
+    window.addEventListener('resize', checkActiveSection, { passive: true })
 
     return () => {
-      triggers.forEach((tr) => tr.kill())
+      clearTimeout(initialTimer)
+      window.removeEventListener('scroll', checkActiveSection)
+      window.removeEventListener('resize', checkActiveSection)
     }
   }, [lang, isRTL])
 
