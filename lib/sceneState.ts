@@ -11,6 +11,7 @@ export interface SceneState {
   processStep: number // 0, 1, 2, 3
   materialVariant: 'oak' | 'boucle' | 'walnut'
   heroFurnishProgress: number // 0.0 to 1.0 (driven by pinned Hero ScrollTrigger)
+  iosModalOpen: boolean
 }
 
 type Listener = (state: SceneState) => void
@@ -25,6 +26,7 @@ class SceneStateManager {
     processStep: 0,
     materialVariant: 'oak',
     heroFurnishProgress: 0,
+    iosModalOpen: false,
   }
 
   private listeners: Set<Listener> = new Set()
@@ -90,6 +92,20 @@ class SceneStateManager {
     const list: ('oak' | 'boucle' | 'walnut')[] = ['oak', 'boucle', 'walnut']
     const nextIdx = (list.indexOf(this.state.materialVariant) + 1) % list.length
     this.setMaterialVariant(list[nextIdx])
+  }
+
+  public openIosModal() {
+    if (this.state.iosModalOpen) return
+    this.state = { ...this.state, iosModalOpen: true }
+    soundEngine.playInspectHum()
+    this.notify()
+  }
+
+  public closeIosModal() {
+    if (!this.state.iosModalOpen) return
+    this.state = { ...this.state, iosModalOpen: false }
+    soundEngine.playClickTick()
+    this.notify()
   }
 }
 

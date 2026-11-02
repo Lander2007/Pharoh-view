@@ -14,6 +14,7 @@ import SDGs from '@/components/sections/SDGs'
 import FuturePlan from '@/components/sections/FuturePlan'
 import CTA from '@/components/sections/CTA'
 import Footer from '@/components/sections/Footer'
+import IosModal from '@/components/common/IosModal'
 import { useLanguage } from '@/lib/i18n'
 
 // Dynamic import for persistent 3D architectural living room scene (no SSR)
@@ -53,6 +54,9 @@ export default function Home() {
 
       {/* Layer 3: Top Floating Luxury Architectural Glass Dock (z-[100]) */}
       <Nav isVisible={isPreloaded} />
+
+      {/* iOS App Coming Soon Architectural Dialog Modal (z-[200]) */}
+      <IosModal />
 
       {/* Layer 0: Fixed 3D Spatial Architectural Living Room (z-[1] - persistent full 3D environment) */}
       <ChairScene />

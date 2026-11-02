@@ -218,6 +218,171 @@ export const CINEMATIC_KEYFRAMES: CinematicFrame[] = [
   },
 ]
 
+/**
+ * Dedicated Portrait Mobile Cinematic Keyframes.
+ * Re-framed with deep vertical perspective (FOV 50°–54°) and centered chair coordinates (x: 0.0)
+ * so the architectural room, descending furniture, and sunlight fit with zero edge clipping.
+ */
+export const CINEMATIC_KEYFRAMES_MOBILE: CinematicFrame[] = [
+  // CHAPTER 01 — THE EMPTY SPACE (Portrait Mobile)
+  {
+    progress: 0.0,
+    cameraPos: [0.0, 1.55, 4.2],
+    cameraTarget: [0.0, 0.70, 0.1],
+    cameraFov: 54,
+    scanProgress: 0.0,
+    furnitureArrival: 0.0,
+    furnitureRotationY: 0.38,
+    roomTransformation: 0.0,
+    sunIntensity: 3.2,
+    ambientWarmth: 1.0,
+  },
+  {
+    progress: 0.12,
+    cameraPos: [0.0, 1.48, 3.8],
+    cameraTarget: [0.0, 0.65, 0.15],
+    cameraFov: 54,
+    scanProgress: 0.0,
+    furnitureArrival: 0.0,
+    furnitureRotationY: 0.38,
+    roomTransformation: 0.0,
+    sunIntensity: 3.2,
+    ambientWarmth: 1.0,
+  },
+
+  // CHAPTER 02 — THE SPATIAL SCAN (Portrait Mobile)
+  {
+    progress: 0.18,
+    cameraPos: [0.0, 1.42, 3.4],
+    cameraTarget: [0.0, 0.58, 0.2],
+    cameraFov: 53,
+    scanProgress: 0.45,
+    furnitureArrival: 0.0,
+    furnitureRotationY: 0.38,
+    roomTransformation: 0.0,
+    sunIntensity: 2.8,
+    ambientWarmth: 1.1,
+  },
+  {
+    progress: 0.28,
+    cameraPos: [0.0, 1.35, 3.0],
+    cameraTarget: [0.0, 0.52, 0.25],
+    cameraFov: 52,
+    scanProgress: 1.0,
+    furnitureArrival: 0.0,
+    furnitureRotationY: 0.38,
+    roomTransformation: 0.0,
+    sunIntensity: 2.9,
+    ambientWarmth: 1.1,
+  },
+
+  // CHAPTER 03 — THE ARRIVAL (Portrait Mobile)
+  {
+    progress: 0.34,
+    cameraPos: [0.0, 1.25, 2.7],
+    cameraTarget: [0.0, 0.44, 0.35],
+    cameraFov: 50,
+    scanProgress: 0.8,
+    furnitureArrival: 0.55,
+    furnitureRotationY: 0.42,
+    roomTransformation: 0.0,
+    sunIntensity: 3.1,
+    ambientWarmth: 1.0,
+  },
+  {
+    progress: 0.44,
+    cameraPos: [0.08, 1.20, 2.5],
+    cameraTarget: [0.0, 0.44, 0.35],
+    cameraFov: 50,
+    scanProgress: 0.2,
+    furnitureArrival: 1.0,
+    furnitureRotationY: 0.85,
+    roomTransformation: 0.0,
+    sunIntensity: 3.3,
+    ambientWarmth: 1.0,
+  },
+
+  // CHAPTER 04 — THE TRANSFORMATION (Portrait Mobile)
+  {
+    progress: 0.52,
+    cameraPos: [0.12, 1.22, 2.7],
+    cameraTarget: [0.0, 0.44, 0.35],
+    cameraFov: 52,
+    scanProgress: 0.0,
+    furnitureArrival: 1.0,
+    furnitureRotationY: 1.65,
+    roomTransformation: 0.45,
+    sunIntensity: 3.2,
+    ambientWarmth: 1.1,
+  },
+  {
+    progress: 0.62,
+    cameraPos: [0.15, 1.28, 3.0],
+    cameraTarget: [0.0, 0.44, 0.35],
+    cameraFov: 54,
+    scanProgress: 0.0,
+    furnitureArrival: 1.0,
+    furnitureRotationY: 2.75,
+    roomTransformation: 1.0,
+    sunIntensity: 3.0,
+    ambientWarmth: 1.15,
+  },
+
+  // CHAPTER 05 — THE TECHNOLOGY & PRECISION (Portrait Mobile)
+  {
+    progress: 0.70,
+    cameraPos: [0.10, 1.18, 2.2],
+    cameraTarget: [0.0, 0.44, 0.35],
+    cameraFov: 48,
+    scanProgress: 0.0,
+    furnitureArrival: 1.0,
+    furnitureRotationY: 3.90,
+    roomTransformation: 1.0,
+    sunIntensity: 2.9,
+    ambientWarmth: 1.0,
+  },
+  {
+    progress: 0.80,
+    cameraPos: [0.05, 1.20, 2.3],
+    cameraTarget: [0.0, 0.44, 0.35],
+    cameraFov: 48,
+    scanProgress: 0.0,
+    furnitureArrival: 1.0,
+    furnitureRotationY: 4.85,
+    roomTransformation: 1.0,
+    sunIntensity: 3.0,
+    ambientWarmth: 1.0,
+  },
+
+  // CHAPTER 06 — THE IMPACT & RESOLUTION (Portrait Mobile)
+  {
+    progress: 0.88,
+    cameraPos: [0.0, 1.30, 3.1],
+    cameraTarget: [0.0, 0.45, 0.35],
+    cameraFov: 52,
+    scanProgress: 0.0,
+    furnitureArrival: 1.0,
+    furnitureRotationY: 5.95,
+    roomTransformation: 1.0,
+    sunIntensity: 2.8,
+    ambientWarmth: 1.05,
+  },
+
+  // CHAPTER 07 — THE FINAL CALL TO ACTION (Portrait Mobile)
+  {
+    progress: 1.0,
+    cameraPos: [0.0, 1.35, 3.4],
+    cameraTarget: [0.0, 0.45, 0.35],
+    cameraFov: 53,
+    scanProgress: 0.0,
+    furnitureArrival: 1.0,
+    furnitureRotationY: Math.PI * 2 + 0.38,
+    roomTransformation: 1.0,
+    sunIntensity: 2.7,
+    ambientWarmth: 1.0,
+  },
+]
+
 export function interpolateHeroCamera(
   heroProgress: number,
   isRTL: boolean = false
@@ -234,8 +399,6 @@ export function interpolateHeroCamera(
   let fov: number
 
   if (clamped <= 0.25) {
-    // Stage 1: LiDAR Floor Scan & Camera Push (0% to 25%)
-    // Smoothly dolly the 3D camera forward toward the center of the wooden floor (camera.position.z moves closer by 1.5 units, slight pan toward center)
     const t = clamped / 0.25
     const ease = t * t * (3 - 2 * t)
     const startX = isRTL ? 1.4 : -1.4
@@ -245,7 +408,7 @@ export function interpolateHeroCamera(
     pos = [
       THREE.MathUtils.lerp(startX, endX, ease),
       THREE.MathUtils.lerp(1.48, 1.35, ease),
-      THREE.MathUtils.lerp(4.3, 2.8, ease), // closer by 1.5 units (4.3 -> 2.8)
+      THREE.MathUtils.lerp(4.3, 2.8, ease),
     ]
     target = [
       THREE.MathUtils.lerp(startTargetX, chairX, ease),
@@ -254,7 +417,6 @@ export function interpolateHeroCamera(
     ]
     fov = THREE.MathUtils.lerp(41, 40, ease)
   } else if (clamped <= 0.75) {
-    // Stage 2: Materializing the Furniture (25% to 75%)
     const t = (clamped - 0.25) / 0.50
     const ease = t * t * (3 - 2 * t)
     const startX = isRTL ? 0.35 : -0.35
@@ -268,7 +430,6 @@ export function interpolateHeroCamera(
     target = [chairX, THREE.MathUtils.lerp(0.52, 0.44, ease), 0.35]
     fov = THREE.MathUtils.lerp(40, 38, ease)
   } else {
-    // Stage 3: Ambient Lamp Ignition & Full Furnished View (75% to 100%)
     const t = (clamped - 0.75) / 0.25
     const ease = t * t * (3 - 2 * t)
     const startX = isRTL ? -0.15 : 0.15
@@ -286,8 +447,69 @@ export function interpolateHeroCamera(
   return { pos, target, fov }
 }
 
-export function interpolateCinematicFrame(progress: number): CinematicFrame {
-  const frames = CINEMATIC_KEYFRAMES
+/**
+ * Dedicated Portrait Mobile Hero Camera Interpolation.
+ * Frames the 3D room with central balance, leaving room for top headline & bottom dock.
+ */
+export function interpolateHeroCameraMobile(
+  heroProgress: number,
+  isRTL: boolean = false
+): {
+  pos: [number, number, number]
+  target: [number, number, number]
+  fov: number
+} {
+  const chairX = isRTL ? -0.05 : 0.05
+  const clamped = THREE.MathUtils.clamp(heroProgress, 0, 1)
+
+  let pos: [number, number, number]
+  let target: [number, number, number]
+  let fov: number
+
+  if (clamped <= 0.25) {
+    const t = clamped / 0.25
+    const ease = t * t * (3 - 2 * t)
+    pos = [
+      0.0,
+      THREE.MathUtils.lerp(1.55, 1.40, ease),
+      THREE.MathUtils.lerp(4.2, 3.2, ease),
+    ]
+    target = [
+      chairX,
+      THREE.MathUtils.lerp(0.70, 0.50, ease),
+      THREE.MathUtils.lerp(0.1, 0.35, ease),
+    ]
+    fov = THREE.MathUtils.lerp(54, 52, ease)
+  } else if (clamped <= 0.75) {
+    const t = (clamped - 0.25) / 0.50
+    const ease = t * t * (3 - 2 * t)
+    pos = [
+      0.0,
+      THREE.MathUtils.lerp(1.40, 1.25, ease),
+      THREE.MathUtils.lerp(3.2, 2.7, ease),
+    ]
+    target = [chairX, THREE.MathUtils.lerp(0.50, 0.44, ease), 0.35]
+    fov = THREE.MathUtils.lerp(52, 50, ease)
+  } else {
+    const t = (clamped - 0.75) / 0.25
+    const ease = t * t * (3 - 2 * t)
+    pos = [
+      0.0,
+      THREE.MathUtils.lerp(1.25, 1.35, ease),
+      THREE.MathUtils.lerp(2.7, 3.3, ease),
+    ]
+    target = [chairX, THREE.MathUtils.lerp(0.44, 0.48, ease), 0.35]
+    fov = THREE.MathUtils.lerp(50, 53, ease)
+  }
+
+  return { pos, target, fov }
+}
+
+export function interpolateCinematicFrame(
+  progress: number,
+  isMobile: boolean = false
+): CinematicFrame {
+  const frames = isMobile ? CINEMATIC_KEYFRAMES_MOBILE : CINEMATIC_KEYFRAMES
   const clamped = THREE.MathUtils.clamp(progress, 0, 1)
 
   let lower = frames[0]
@@ -304,7 +526,6 @@ export function interpolateCinematicFrame(progress: number): CinematicFrame {
   if (lower === upper) return lower
 
   const t = (clamped - lower.progress) / (upper.progress - lower.progress)
-  // Smooth cubic ease in-out
   const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
 
   const lerp = (a: number, b: number) => a + (b - a) * ease

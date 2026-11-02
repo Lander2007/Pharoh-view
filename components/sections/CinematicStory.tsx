@@ -187,12 +187,13 @@ export default function CinematicStory() {
               {/* Right Column: Sharp Right-Aligned CTA Buttons */}
               <div className="flex flex-wrap items-center justify-start lg:justify-end gap-3 shrink-0">
                 {/* Button 1: DOWNLOAD FOR IOS */}
-                <a
-                  href="#cta"
+                <button
+                  type="button"
+                  onClick={() => sceneState.openIosModal()}
                   className="bg-[#1C1917] text-[#F5EEE6] hover:bg-[#8C6239] h-[44px] px-[22px] rounded-none font-mono text-[11px] font-bold uppercase tracking-[0.12em] border border-[#1C1917] transition-colors duration-200 inline-flex items-center justify-center cursor-pointer shadow-sm"
                 >
                   {isRTL ? 'تحميل لنظام IOS' : 'DOWNLOAD FOR IOS'}
-                </a>
+                </button>
 
                 {/* Button 2: DOWNLOAD FOR ANDROID */}
                 <a

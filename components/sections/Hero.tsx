@@ -90,12 +90,13 @@ export default function Hero() {
           {/* Sharp Architectural CTA Row */}
           <div className="mt-9 flex flex-wrap items-center gap-4">
             {/* Download iOS Button */}
-            <a
-              href="#cta"
+            <button
+              type="button"
+              onClick={() => sceneState.openIosModal()}
               className="bg-[#1C1917] text-[#F4EFE6] hover:bg-[#8C6239] rounded-none h-12 px-6 font-mono text-xs font-bold uppercase tracking-wider transition-colors inline-flex items-center justify-center cursor-pointer shadow-sm"
             >
               {t.hero.downloadIos}
-            </a>
+            </button>
 
             {/* Android APK Download Button */}
             <a

@@ -5,11 +5,16 @@ import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { ContactShadows, OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
 import ArchitecturalRoom from './ArchitecturalRoom'
-import { interpolateCinematicFrame, interpolateHeroCamera } from '@/lib/cinematicTimeline'
+import {
+  interpolateCinematicFrame,
+  interpolateHeroCamera,
+  interpolateHeroCameraMobile,
+} from '@/lib/cinematicTimeline'
 import { useScrollProgress } from '@/lib/useScrollProgress'
 import { useSceneState, sceneState } from '@/lib/sceneState'
 import CanvasErrorBoundary from '@/components/common/CanvasErrorBoundary'
 import { useLanguage } from '@/lib/i18n'
+import { useDeviceCapabilities } from '@/lib/useDeviceCapabilities'
 
 /**
  * Ultra-lightweight architectural vignette (100% GPU CSS hardware accelerated, zero SVG filter passes).
@@ -108,9 +113,21 @@ function CameraController({
   return null
 }
 
-function SceneContent({ isRTL }: { isRTL: boolean }) {
+function SceneContent({
+  isRTL,
+  isMobile,
+  qualityProfile,
+  shadowMapSize,
+  enableRealtimeShadows,
+}: {
+  isRTL: boolean
+  isMobile: boolean
+  qualityProfile: string
+  shadowMapSize: number
+  enableRealtimeShadows: boolean
+}) {
   const progress = useScrollProgress()
-  const frame = interpolateCinematicFrame(progress)
+  const frame = interpolateCinematicFrame(progress, isMobile)
   const { inspectMode, heroFurnishProgress } = useSceneState()
 
   // Timeline camera orientation
@@ -122,14 +139,17 @@ function SceneContent({ isRTL }: { isRTL: boolean }) {
     : frame.cameraTarget
 
   // Smooth camera interpolation during pinned Hero 3-stage sequence
-  const heroCam = interpolateHeroCamera(heroFurnishProgress, isRTL)
+  const heroCam = isMobile
+    ? interpolateHeroCameraMobile(heroFurnishProgress, isRTL)
+    : interpolateHeroCamera(heroFurnishProgress, isRTL)
   const isHeroActive = heroFurnishProgress < 0.999 && progress < 0.25
 
   const cameraPos = isHeroActive ? heroCam.pos : timelineCameraPos
   const cameraTarget = isHeroActive ? heroCam.target : timelineCameraTarget
   const cameraFov = isHeroActive ? heroCam.fov : frame.cameraFov
 
-  const chairPos = isRTL ? -0.55 : 0.55
+  // Center chair in portrait mobile, offset on desktop
+  const chairPos = isMobile ? (isRTL ? -0.05 : 0.05) : (isRTL ? -0.55 : 0.55)
 
   // Ground shadow opacity (fades in as chair lands at y = 0.00)
   let shadowOpacity = 0.52 * frame.furnitureArrival
@@ -144,7 +164,7 @@ function SceneContent({ isRTL }: { isRTL: boolean }) {
       <CameraController
         targetPos={cameraPos}
         targetLookAt={cameraTarget}
-        targetFov={frame.cameraFov}
+        targetFov={cameraFov}
         inspectMode={inspectMode}
       />
 
@@ -153,8 +173,8 @@ function SceneContent({ isRTL }: { isRTL: boolean }) {
         position={[-7, 5.8, 1.2]}
         intensity={frame.sunIntensity}
         color="#FFF3E0"
-        castShadow
-        shadow-mapSize={[1024, 1024]}
+        castShadow={enableRealtimeShadows}
+        shadow-mapSize={enableRealtimeShadows ? [shadowMapSize, shadowMapSize] : [256, 256]}
         shadow-camera-near={1.0}
         shadow-camera-far={18}
         shadow-camera-left={-6.5}
@@ -184,6 +204,8 @@ function SceneContent({ isRTL }: { isRTL: boolean }) {
           furnitureRotationY={frame.furnitureRotationY}
           roomTransformation={frame.roomTransformation}
           isRTL={isRTL}
+          isMobile={isMobile}
+          qualityProfile={qualityProfile as 'high' | 'balanced' | 'performance'}
         />
 
         {/* OrbitControls enabled exclusively in Inspect Mode */}
@@ -191,10 +213,14 @@ function SceneContent({ isRTL }: { isRTL: boolean }) {
           <OrbitControls
             makeDefault
             enableZoom={true}
-            minDistance={1.4}
+            minDistance={1.2}
             maxDistance={5.5}
             target={new THREE.Vector3(chairPos, 0.44, 0.35)}
             dampingFactor={0.08}
+            touches={{
+              ONE: THREE.TOUCH.ROTATE,
+              TWO: THREE.TOUCH.DOLLY_PAN,
+            }}
           />
         )}
 
@@ -277,6 +303,7 @@ export default function ChairScene() {
   const { t, isRTL } = useLanguage()
   const canvasRef = useRef<HTMLDivElement>(null)
   const { inspectMode, materialVariant } = useSceneState()
+  const capabilities = useDeviceCapabilities()
   const [hasWebGL, setHasWebGL] = useState(false)
   const [tested, setTested] = useState(false)
 
@@ -332,7 +359,13 @@ export default function ChairScene() {
                 gl.shadowMap.type = THREE.PCFShadowMap
               }}
             >
-              <SceneContent isRTL={isRTL} />
+              <SceneContent
+                isRTL={isRTL}
+                isMobile={capabilities.isMobile}
+                qualityProfile={capabilities.qualityProfile}
+                shadowMapSize={capabilities.shadowMapSize}
+                enableRealtimeShadows={capabilities.enableRealtimeShadows}
+              />
             </Canvas>
           ) : (
             tested && <Architectural2DStage isRTL={isRTL} />

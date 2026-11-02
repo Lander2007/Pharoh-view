@@ -12,6 +12,8 @@ interface ArchitecturalRoomProps {
   furnitureRotationY?: number
   roomTransformation?: number
   isRTL?: boolean
+  isMobile?: boolean
+  qualityProfile?: 'high' | 'balanced' | 'performance'
 }
 
 /**
@@ -183,6 +185,8 @@ export default function ArchitecturalRoom({
   furnitureRotationY = 0.38,
   roomTransformation = 0,
   isRTL = false,
+  isMobile = false,
+  qualityProfile = 'high',
 }: ArchitecturalRoomProps) {
   const roomGroupRef = useRef<THREE.Group>(null!)
   const chairGroupRef = useRef<THREE.Group>(null!)
@@ -683,8 +687,8 @@ export default function ArchitecturalRoom({
     }
   })
 
-  // Ground placement coordinates for furniture
-  const chairX = isRTL ? -0.55 : 0.55
+  // Ground placement coordinates for furniture: perfectly centered in portrait mobile, offset on desktop
+  const chairX = isMobile ? (isRTL ? -0.05 : 0.05) : (isRTL ? -0.55 : 0.55)
   const chairZ = 0.35
 
   return (
@@ -1075,7 +1079,7 @@ export default function ArchitecturalRoom({
       ========================================================================= */}
       <group
         ref={sideTableGroupRef}
-        position={[isRTL ? chairX - 0.85 : chairX + 0.85, 2.5, chairZ + 0.08]}
+        position={[isRTL ? chairX - (isMobile ? 0.72 : 0.85) : chairX + (isMobile ? 0.72 : 0.85), 2.5, chairZ + 0.08]}
         visible={false}
       >
         <mesh

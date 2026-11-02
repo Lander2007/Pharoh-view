@@ -3,6 +3,7 @@
 import MagneticButton from '@/components/common/MagneticButton'
 import CurtainWipeTransition from '@/components/common/CurtainWipeTransition'
 import { useLanguage } from '@/lib/i18n'
+import { sceneState } from '@/lib/sceneState'
 
 export default function CTA() {
   const { t } = useLanguage()
@@ -37,7 +38,7 @@ export default function CTA() {
 
           <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
             <MagneticButton
-              href="#"
+              onClick={() => sceneState.openIosModal()}
               label={t.cta.downloadIos}
               variant="primary"
               className="!rounded-[2px] !px-8 !py-4 shadow-architectural"
